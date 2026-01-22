@@ -17,6 +17,7 @@ Keep this line unchanged. Try to add your name and ID numbers.
 
 ### Common things to remember
  - Use src folder for storing source .cpp files
+ - Follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) when writing commit messages
 
 ### TODO
  - [ ] Better README
