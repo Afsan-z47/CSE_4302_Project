@@ -17,6 +17,8 @@
  - Use src folder for storing source .cpp files
  - Follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) when writing commit messages
 
+ - Don't setup build directory over and over again. [See more](https://github.com/Afsan-z47/CSE_4302_Project#compile-and-run-meson) here at Build the project
+
 ### Compile and Run (Meson)
 1. **Install Meson and Ninja** (if not installed):
 
@@ -43,6 +45,9 @@ meson setup build
 ```
 
 3. **Build the project**:
+
+> [!NOTE]
+> Start from this part if you already have a set up build directory. No need to reinstall and setup build directory over and over again.
 
 ```bash
 meson compile -C build
@@ -77,10 +82,11 @@ executable('project.o', sources)
 
 ### TODO
 
-* [ ] Better README
-* [ ] Initial Codes
-* [x] Configure make file -> Used meson as a build system
-* [ ] Integrate Clang-tidy
+- [ ] Better README
+- [ ] Initial Codes
+- [x] Configure make file -> Used meson as a build system
+- [ ] Configure .gitignore
+- [ ] Integrate Clang-tidy
 
 ### Coding Standards
 
