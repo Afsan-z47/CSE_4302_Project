@@ -1,8 +1,6 @@
 # CSE_4302_Project
 --------------------
 
-Keep this line unchanged. Try to add your name and ID numbers.
-
 | Name                    | ID        |
 |-------------------------|-----------|
 | Najmus Sakib            | 230041149 |
@@ -19,12 +17,72 @@ Keep this line unchanged. Try to add your name and ID numbers.
  - Use src folder for storing source .cpp files
  - Follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) when writing commit messages
 
+### Compile and Run (Meson)
+1. **Install Meson and Ninja** (if not installed):
+
+- **Fedora / RedHat**:
+```bash
+sudo dnf install meson ninja-build
+```
+ - **Ubuntu / Debian**:
+
+```bash
+sudo apt update
+sudo apt install meson ninja-build
+```
+ - **macOS (using Homebrew)**:
+
+```bash
+brew install meson ninja
+```
+
+2. **Set up build directory**:
+
+```bash
+meson setup build
+```
+
+3. **Build the project**:
+
+```bash
+meson compile -C build
+```
+
+4. **Run the executable**:
+
+```bash
+./build/project.o
+```
+
+### Configuring meson.build / How to add more files to compile
+  - At ***the CSE_4302_Project/src*** directory edit ***meson.build*** file.
+  - You should see something like this...
+
+```meson
+# src file list
+
+sources = files(
+	'main.cpp'
+#       'other.cpp'  # add other files like this. 
+	             # Besure to add commas (,) to previous ones ends.
+)
+
+# Build an executable
+
+executable('project.o', sources)
+```
+   - As directed, add your new file below the main.cpp in the appropriate format.
+
+---
+
 ### TODO
- - [ ] Better README
- - [ ] Initial Codes
- - [ ] Configure make file
- - [ ] Integrate Clang-tidy
+
+* [ ] Better README
+* [ ] Initial Codes
+* [x] Configure make file -> Used meson as a build system
+* [ ] Integrate Clang-tidy
 
 ### Coding Standards
- - [LLVM Coding Standards](https://llvm.org/docs/CodingStandards.html)
- - [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)
+
+* [LLVM Coding Standards](https://llvm.org/docs/CodingStandards.html)
+* [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)
