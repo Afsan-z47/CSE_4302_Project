@@ -99,6 +99,8 @@ Checks: >
   clang-analyzer-*,
   cppcoreguidelines-*,
   modernize-*,
+  bugprone-*,
+  misc-*,
   performance-*,
   readability-*,
   llvm-*
@@ -108,7 +110,6 @@ FormatStyle: file
 CheckOptions:
   - key:             modernize-use-auto.MinTypeNameLength
     value:           '0'
-
 ```
 
 ### Configuring meson.build / How to add more files to compile
