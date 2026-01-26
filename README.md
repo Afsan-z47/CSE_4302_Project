@@ -20,12 +20,12 @@
 - Md. Azizul Hakim Khan - 230041141
 1.User
 2.Student
-3.School System
+3.Teacher
 4.Admin
 
 --Aahil Zaman - 230041133
-1.Report Card
-2.Teacher
+1.Course
+2.Grade
 
 - Sami Rahman  -  230041111
 
