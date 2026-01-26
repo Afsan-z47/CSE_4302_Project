@@ -49,6 +49,7 @@ public:
 
 
 class Student{
+
     string name;
     string fatherName;
     string motherName;
@@ -56,7 +57,65 @@ class Student{
     string address;
     string phoneNumber;
 
+public:
+    Student(string n, string fn, string mn, string id, string addr, string pn) : name(n), fatherName(fn), motherName(mn), ID(id), address(addr), phoneNumber(pn) {
+        cout << "Welcome to our school" << endl;
+    };
+    ~Student(){
+        cout << "Thank you for studying in our school. Hope you shine bright in your future." << endl;
+    };
+    string getName() const {
+        return name;
+    }
+
+    string getFatherName() const {
+        return fatherName;
+    }
+
+    string getMotherName() const {
+        return motherName;
+    }
+
+    string getID() const {
+        return ID;
+    }
+
+    string getAddress() const {
+        return address;
+    }
+
+    string getPhoneNumber() const {
+        return phoneNumber;
+    }
+
+    void setName(const string& n) {
+        name = n;
+    }
+
+    void setFatherName(const string& fn) {
+        fatherName = fn;
+    }
+
+    void setMotherName(const string& mn) {
+        motherName = mn;
+    }
+
+    void setID(const string& id) {
+        ID = id;
+    }
+
+    void setAddress(const string& addr) {
+        address = addr;
+    }
+
+    void setPhoneNumber(const string& pn) {
+        phoneNumber = pn;
+    }
+    
+
+
 };
 
 int main(){
+
 }
