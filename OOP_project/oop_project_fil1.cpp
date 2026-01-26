@@ -12,7 +12,7 @@ string getPassword() const{
     
 public:
     User(string id, string uname, string pass, string mail) : ID(id), username(uname), password(pass), email(mail) {
-        cout << "Welcome" << endl;
+        cout << "Welcome " << uname  << endl;
     }
 
     void setPassword(string pass){
@@ -48,8 +48,6 @@ public:
 };
 
 
-
-
 class Student{
     string name;
     string fatherName;
@@ -59,5 +57,6 @@ class Student{
     string phoneNumber;
 
 };
+
 int main(){
 }
