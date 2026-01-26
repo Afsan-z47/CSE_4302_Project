@@ -8,6 +8,30 @@
 | Md. Azizul Hakim Khan   | 230041141 |
 | Sami Rahman             | 230041111 |
 
+<<<<<<< HEAD
+- Najmus Sakib - 230041149
+- Aahil Zaman - 230041133
+- Md. Azizul Hakim Khan - 230041141
+- Sami Rahman  -  230041111
+
+
+//Work Distribution:
+
+- Md. Azizul Hakim Khan - 230041141
+1.User
+2.Student
+3.Teacher
+4.Admin
+
+--Aahil Zaman - 230041133
+1.Course
+2.Grade
+
+- Sami Rahman  -  230041111
+
+- Najmus Sakib - 230041149
+
+=======
 
 # School Management System
 ----------------------------
@@ -146,3 +170,4 @@ executable('project.o', sources)
 
 * [LLVM Coding Standards](https://llvm.org/docs/CodingStandards.html)
 * [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)
+>>>>>>> main
