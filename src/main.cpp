@@ -1,5 +1,7 @@
-#include <iostream>
+#include "user.cpp"
 
-int main() {
-	std::cout << "Hello world! over and over again!" << '\n';
+int main(){
+    srand((unsigned)time(nullptr));
+	User new_user("001", "Azizul", "123", "haki@iut-dhaka.edu");
+	cout << "Running main.cpp\n";
 }

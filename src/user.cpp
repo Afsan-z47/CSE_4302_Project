@@ -161,6 +161,4 @@ public:
 };
 
 
-int main(){
-    srand((unsigned)time(nullptr));
-}
+

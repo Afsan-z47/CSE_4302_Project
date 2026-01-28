@@ -1,6 +1,7 @@
 # List all source files
 sources = files(
-  'main.cpp'
+  'main.cpp',
+  'user.cpp',
   # 'other.cpp',  # Add additional files here. Make sure previous line ends with a comma
 )
 
