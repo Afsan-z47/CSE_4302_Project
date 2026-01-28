@@ -26,7 +26,16 @@
 	- [ ] TBD
 
 - Najmus Sakib
-	- [ ] TBD
+	- [ ] SchoolSystem
+
+***Pick from here***
+-------------------
+- Assessment
+- ReportCard
+- AttendanceRecord
+- Payment
+- Invoice
+- PaymentSystem
 
 # School Management System
 ----------------------------
