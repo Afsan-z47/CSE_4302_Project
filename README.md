@@ -23,7 +23,8 @@
   	- [ ] Grade
 
 - Sami Rahman
-	- [ ] TBD
+    - [ ] AttendanceRecord
+    - [ ] ReportCard
 
 - Najmus Sakib
 	- [ ] SchoolSystem
@@ -31,8 +32,6 @@
 ***Pick from here***
 -------------------
 - Assessment
-- ReportCard
-- AttendanceRecord
 - Payment
 - Invoice
 - PaymentSystem
