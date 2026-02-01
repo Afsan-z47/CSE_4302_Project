@@ -1,16 +1,23 @@
 #include<iostream>
+#include "assessment.cpp"
+// #include "student.cpp"
 class Grade{
 	// Student s1;
-	// Assessment a1;
-	double marks_obtained;
+	 Assessment a1;
+	char grade;
 public:
-	Grade(){}
-	// Grade(Student s2,Assessment a2,double marks):s1(s2),a1(a2),marks_obtained(marks){}
-	void set_marks(double d1){
-	marks_obtained = d1;
-		std::cout<<"Set the marks to:"<<d1<<std::endl;
+	// Grade(Student s2,Assessment a2):s1(s2),a1(a2){}
+	char calculate_grade(){
+	double percent = a1.get_percentage();
+	if(percent >= 80) return 'A+';
+	else if(percent >= 75) return 'A';
+	else if(percent >= 70) return 'A-';
+	else if(percent >=65) return 'B+';
+	else if(percent >=60) return 'B';
+	else if(percent >= 55) return 'B-';
+	else if(percent >= 50) return 'C+';
+	else if(percent >= 45) return 'C';
+	else if(percent >= 40) return 'D';
+	else return 'F';
 	}
-	// double get_percentage(){
-	// }
-	// double getWeightedMarks(){}
 };
