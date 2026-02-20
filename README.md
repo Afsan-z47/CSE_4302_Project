@@ -20,8 +20,8 @@
 
 - Aahil Zaman
   	- [ ] Course
-    -
-    -
+    -[]Grade
+    -NO MORE
 
 - Sami Rahman
     - [ ] AttendanceRecord
