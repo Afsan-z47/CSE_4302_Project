@@ -12,12 +12,12 @@ class User {
 	std::string email;
 	std::string salt;
 	size_t passwordHash;
-
+	
 	static std::string makeSalt() ;
 	static size_t hashPass(const std::string& salt, const std::string& pass) ;
 
 public:
-
+	User(){}
 	User(std::string id, std::string uname, std::string pass, std::string mail);
 
 	void setPassword(const std::string& pass);
@@ -41,7 +41,7 @@ class Student : public User {
 
 public:
 	Student(std::string n, std::string fn, std::string mn, std::string addr, std::string pn, std::string mail, std::string password, std::string ID);
-
+	Student(){}
 	~Student();
 
 	std::string getName() const ;
