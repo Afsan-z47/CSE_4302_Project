@@ -230,7 +230,8 @@ public:
 			throw std::runtime_error("Cannot open attendance_record file");
 		}
 
-
+		//TODO:
+		//[ ] - Write loads from files for system initializations
 
 
 
