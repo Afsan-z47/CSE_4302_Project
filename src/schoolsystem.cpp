@@ -89,8 +89,7 @@
 */
 
 #include "user.h"
-#include "grade.cpp"
-//#include "course.cpp"
+#include "course.cpp"
 #include <cstdint>
 #include <istream>
 #include <ostream>
@@ -98,15 +97,7 @@
 #include <string>
 #include <fstream>
 #include <vector>
-
-template<typename T>
-class File_ops {
-public:
-
-	virtual void save(const std::ostream &f_out) = 0;
-	virtual T load(const std::istream &f_in) = 0;
-};
-
+#include "file_ops.h"
 
 
 enum Privilege_type : uint8_t {
@@ -186,7 +177,7 @@ private:
 	std::vector<Student> student_list;
 	std::vector<Admin> admin_list;
 //	std::vector<Teacher> course_list;
-//	std::vector<Course> course_list;
+	std::vector<Course> course_list;
 //	std::vector<report_card> user_list;
 //	std::vector<attendance_record> user_list;
 
