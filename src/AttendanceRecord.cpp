@@ -1,0 +1,12 @@
+#include "AttendanceRecord.h"
+#include <iostream>
+
+AttendanceRecord::AttendanceRecord(std::string sID, std::string cCode, std::string d, bool status)
+    : studentID(sID), courseCode(cCode), date(d), isPresent(status) {}
+
+void AttendanceRecord::displayAttendance() const {
+    std::cout << "Date: " << date <<std::endl;
+       std ::cout<< "Course: " << courseCode <<std::endl;
+            std::cout<<"Student ID: " << studentID <<std::endl;
+              std ::cout<<"Status: " << (isPresent ? "Present" : "Absent") << std::endl;
+}
