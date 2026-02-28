@@ -8,6 +8,8 @@ sources = files(
   'assessment.cpp',
   'schoolsystem.cpp',
   'grade.cpp',
+  'AttendanceRecord.h',
+  'RecordCard.h',
   # 'other.cpp',  # Add additional files here. Make sure previous line ends with a comma
 )
 

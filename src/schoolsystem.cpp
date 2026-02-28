@@ -90,7 +90,7 @@
 
 #include "user.h"
 #include "grade.cpp"
-#include "course.cpp"
+//#include "course.cpp"
 #include <cstdint>
 #include <istream>
 #include <ostream>
@@ -186,7 +186,7 @@ private:
 	std::vector<Student> student_list;
 	std::vector<Admin> admin_list;
 //	std::vector<Teacher> course_list;
-	std::vector<Course> course_list;
+//	std::vector<Course> course_list;
 //	std::vector<report_card> user_list;
 //	std::vector<attendance_record> user_list;
 
@@ -261,9 +261,9 @@ public:
 
 		std::cin >> password;
 
-		User user(;
+//		User user(;
 
-		user.login(email, password);
+//		user.login(email, password);
 		
 
 	}
