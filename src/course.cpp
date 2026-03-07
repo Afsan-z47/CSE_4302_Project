@@ -104,6 +104,7 @@ public:
 
 //	NOTE: ----- Serialization -----
 
+	// Format: courseCode|courseName|instructorName
 	std::string serialise() const {
 		std::stringstream ss;
 		ss << courseCode << '|'
