@@ -9,14 +9,14 @@ private:
 	std::string courseCode;
 	std::string courseName;
 	std::string instructorName;
-	
+
 
 	std::vector<Student>students_;
 	std::vector<Assessment>assessment_;
 
 	//FIX: Moved to studentCount  function as studnet number counter
 	// std::string studentnumber;
-	
+
 	//BUG: Redundent Grade g1
 	// std::vector<Grade>g1;
 
@@ -39,9 +39,9 @@ public:
 
 
 
-	//NOTE: ------- Setters/Adders -----------
+//	NOTE: ------- Setters/Adders -----------
 
-	//WARNING: Bad naming of id. Naming the same thing as id and courseCode
+//	WARNING: Bad naming of id. Naming the same thing as id and courseCode
 	void setCourseInfo(const std::string &id,const std::string &name,const std::string &instructor){
 		courseCode = id;
 		courseName = name;
@@ -56,17 +56,17 @@ public:
 		assessment_.push_back(a2);
 	}
 
-	//FIX: There were no Getters
+//	FIX: There were no Getters
 	//------- Getters -----------
-	
+
 	std::string getCourseCode() const { return courseCode; }
 	std::string getCourseName() const { return courseName; }
 	std::string getInstructorName() const { return instructorName; }
 	std::size_t studentCount() const { return students_.size(); }
 
 
-	
-	//NOTE: ------------- Display Methods --------------
+
+//	NOTE: ------------- Display Methods --------------
 
 	void displayCourseInfo()const{
 		std::cout<<"Course Id: "<<courseCode<<"| Course Name: "<<courseName<<"| Instructor Name: "<<instructorName<<" | number of students: "<<students_.size()<<"\n";
@@ -100,5 +100,16 @@ public:
 			<<std::setw(15)<<students.getID()
 			<<std::setw(25)<<students.getName();
 		assessments.display();
+	}
+
+//	NOTE: ----- Serialization -----
+
+	std::string serialise() const {
+		std::stringstream ss;
+		ss << courseCode << '|'
+			<< courseName << '|'
+			<< instructorName;
+
+		return ss.str();
 	}
 };
