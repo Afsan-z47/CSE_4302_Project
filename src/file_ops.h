@@ -9,6 +9,14 @@ public:
 	virtual void save(std::ostream &f_out) const = 0;
 	virtual T load(std::istream &f_in) = 0;
 
+	File_ops() = default;
+
+/*NOTE: Preventing misuse [c++ implicitly defines these]
+	- copy constructor
+	- copy assignment
+	- move constructor
+	- move assignment
+*/
 	File_ops(const File_ops &) = delete;
 	File_ops(File_ops &&) = delete;
 	File_ops &operator=(const File_ops &) = delete;
