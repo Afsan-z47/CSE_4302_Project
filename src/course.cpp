@@ -1,3 +1,6 @@
+#ifndef __COURSE__
+#define __COURSE__
+
 #include"user.h"
 #include<iostream>
 #include <vector>
@@ -93,7 +96,7 @@ public:
 		std::cout<<std::left
 			<<std::setw(15)<<"Student ID"
 			<<std::setw(25)<<"Student Name"
-			<<std::setw(10)<<"Marks"
+<<std::setw(10)<<"Marks"
 			<<"\n";
 		std::cout<<"--------------------------------\n";
 		std::cout<<std::left
@@ -114,3 +117,5 @@ public:
 		return ss.str();
 	}
 };
+
+#endif
