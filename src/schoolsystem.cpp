@@ -1,283 +1,175 @@
 /*
-*
-*NOTE:------------------------------------
-* User
-* 	- ID
-* 	- user_name
-* 	- email
-* 	- salt (what is this??)
-* 	- passwordHash?
-*	-> makeSalt()
-*	-> hashpass()
-*	-> setPass()
-*	-> login()
-*	-> forgotpass()
-*
-* Student : User
-* 	- name? (repeat?)
-* 	- fathername
-* 	- mothername
-* 	- ID ? (repeat?)
-*	- address
-*	- phoneNumber
-*	- email ? (repeat?)
-*	= student count
-*	-> SETTER FUNCTIONS
-*
-* Teacher
-* 	- 
-* Admin : User
-* 	- adminID
-* 	- name
-* 	-> generateSID (what's a SID?)
-* 	-> generatePass (why is this under admin?)
-* 	-> addStudent (add where?)
-*
-* Course
-* 	- courseCode
-* 	- courseName
-* 	- Teacher (should be vector <student> ?)
-* 	- vector<Student>
-* 	- studentnumber (admitted course student count)
-* 	-> add_students() (assign student to course)
-*
-*
-* Grade
-*	- Assessment
-*	- char grade (should use enmus?)
-*	-> calculate_grade()
-*
-* Assessment
-* 	- id
-* 	- maxMarks[6]
-* 	- weightage[6]
-* 	- marks_obtained[6]
-* 	-> SETTER FUNCTIONS
-* 	-> GETTER FUNCTIONS
-*	-> get_percentage()
-*
-* Attendance Record
-* Report Card
-* -----------------------------------------
-*/
+ * schoolsystem.cpp — Multi-instance School Management System
+ * ===========================================================
+ *
+ * Multi-terminal design
+ * ─────────────────────
+ *   Multiple terminals may run SchoolSystem simultaneously against the
+ *   same set of data files.  A shared "instance counter" file — protected
+ *   by POSIX flock(2) — tracks how many live processes share the data.
+ *
+ *   • Every instance LOADS all data into its own in-memory vectors on
+ *     construction.
+ *   • Every instance operates on its private in-memory copy while alive.
+ *   • The LAST instance to shut down (counter → 0) writes all vectors
+ *     back to disk, providing a consistent final state.
+ *
+ * Known limitations / future work
+ * ────────────────────────────────
+ *   [ ] Concurrent mutations from two live instances are NOT merged —
+ *       last-writer-wins.  A shared in-memory server (or merge log)
+ *       would be required for true concurrent edits.
+ *   [ ] Teacher class is stubbed; fill in once teacher.h is complete.
+ *   [ ] Grade/report card is stubbed pending Assessment ↔ Course linkage.
+ */
 
-
-
-/*
-*TODO:
-* > SchoolSystem
-* 	- Inherits all of the stuff at the end
-* 	
-* 	> User space controls
-* 		- Login
-* 		- Select type
-* 		- Provide typewise access
-* 	
-* 	- Course info handling
-* 	
-* 	> Save info?
-* 		- Virtual functions?
-* 		- Templates?
-* 	> Load info?
-* 		- Virtual functions?
-* 		- Templates?
-* 	- Admission teacher/student?
-*	
-*	WARNING:
-* 	[ ] Race-condition not handled yet!
-* 	[ ] Deriving multiple schoolSystem!
-*/
+#include "assessment.cpp"   // defines Assessment
+#include "grade.cpp"        // defines Grade  (includes assessment.cpp internally)
+#include "course.cpp"       // defines Course (includes grade.cpp internally)
 
 #include "user.h"
-#include "course.cpp"
+#include "AttendanceRecord.h"
+#include "file_ops.h"
+
+#include <sys/file.h>   // flock(2)
+#include <fcntl.h>      // open(2)
+#include <unistd.h>     // close, ftruncate, lseek, read, write
+
 #include <cstdint>
-#include <istream>
-#include <ostream>
+#include <cstdlib>      // atoi
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <limits>
+#include <sstream>
 #include <stdexcept>
 #include <string>
-#include <fstream>
 #include <vector>
-#include "file_ops.h"
+
 
 
 enum Privilege_type : uint8_t {
-	GUEST,
-	STUDENT,
-	TEACHER,
-	ADMIN,
+	GUEST   = 0,
+	STUDENT = 1,
+	TEACHER = 2,
+	ADMIN   = 3,
 };
 
-class SchoolSystem{ 
-private:
-	Privilege_type privilege;
+//FIXME: Will think about these stuff later
+//	For now, its something to move around
 
-	std::fstream file_user;
-	std::fstream file_student;
-	std::fstream file_admin;
-	std::fstream file_teacher;
-	std::fstream file_course;
-	std::fstream file_report_card;
-	std::fstream file_attendance_record;
+// ═══════════════════════════════════════════════════════════════════
+//  InstanceGuard
+//  ─────────────
+//  RAII wrapper that keeps a reference-counted integer in a plain-text
+//  file, protected by POSIX flock(2).
+//
+//    Construction : increment counter  → signals "I am alive"
+//    release()    : decrement counter  → returns true when counter == 0
+//                   (caller should then flush data to disk)
+// ═══════════════════════════════════════════════════════════════════
 
-	std::vector<Student> student_list;
-	std::vector<Admin> admin_list;
-//	std::vector<Teacher> course_list;
-	std::vector<Course> course_list;
-//	std::vector<report_card> user_list;
-//	std::vector<attendance_record> user_list;
+class InstanceGuard {
+	int fd_{-1};
 
-	void display_head() {
-		std::cout << "--------------------------------------------\n"
-			<< "|         School Management System         |\n"
-			<< "--------------------------------------------\n"
-			<< "                   Login                     \n"
-			<< "                                             \n"
-			<< "Provide username:          \n";
+	// Exclusive lock / unlock on the file descriptor.
+	void lock()   { ::flock(fd_, LOCK_EX); }
+	void unlock() { ::flock(fd_, LOCK_UN); }
+
+	int readCount() {
+		::lseek(fd_, 0, SEEK_SET);
+		char buf[32]{};
+		::read(fd_, buf, sizeof(buf) - 1);
+		int n = std::atoi(buf);
+		return n < 0 ? 0 : n;
 	}
 
-	void display_head_pass() {
-		std::cout << "Provide Password:          \n";
-
+	void writeCount(int n) {
+		if (n < 0) n = 0;
+		::lseek(fd_, 0, SEEK_SET);
+		::ftruncate(fd_, 0);
+		const std::string s = std::to_string(n);
+		::write(fd_, s.c_str(), s.size());
 	}
-
-	void display_main_menu(Privilege_type privilege) {
-		switch (privilege) {
-			case Privilege_type::ADMIN :
-				std::cout << "----------->     Main Menu (Admin)   <-------------\n"
-					<< "1. Admission \n"
-					<< "2. Course Info \n"
-					<< "3. Attendance \n"
-					<< "4. Report Card\n";
-				break;
-
-
-			case Privilege_type::TEACHER :
-				std::cout << "----------->     Main Menu (Teacher)   <-------------\n"
-					<< "1. Course Info \n"
-					<< "2. Attendance \n"
-					<< "3. Report Card\n";
-				break;
-
-			case Privilege_type::STUDENT :
-				std::cout << "----------->     Main Menu (Student)   <-------------\n"
-					<< "1. Attendance \n"
-					<< "2. Report Card\n";
-				break;
-
-			default:
-				std::cout << "----------->     Main Menu (Guest)   <-------------\n";
-		}
-	}
-
 
 public:
-
-	SchoolSystem(
-		const std::string &path_to_user,
-		const std::string &path_to_student,
-		const std::string &path_to_admin,
-		const std::string &path_to_teacher,
-		const std::string &path_to_course,
-		const std::string &path_to_report_card,
-		const std::string &path_to_attendance_record
-	)
-	: privilege(GUEST)
-	{
-		file_user.open(path_to_user, std::ios::in | std::ios::out | std::ios::app);
-		if(!file_user) {
-			throw std::runtime_error("Cannot open user file");
-		}
-		file_student.open(path_to_student, std::ios::in | std::ios::out | std::ios::app);
-		if(!file_student) {
-			throw std::runtime_error("Cannot open student file");
-		}
-
-		file_teacher.open(path_to_teacher, std::ios::in | std::ios::out | std::ios::app);
-		if(!file_teacher) {
-			throw std::runtime_error("Cannot open teacher file");
-		}
-
-		file_admin.open(path_to_admin, std::ios::in | std::ios::out | std::ios::app);
-		if(!file_admin) {
-			throw std::runtime_error("Cannot open admin file");
-		}
-
-		file_course.open(path_to_course, std::ios::in | std::ios::out | std::ios::app);
-		if(!file_course) {
-			throw std::runtime_error("Cannot open course file");
-		}
-
-
-		file_report_card.open(path_to_report_card, std::ios::in | std::ios::out | std::ios::app);
-		if(!file_report_card) {
-			throw std::runtime_error("Cannot open report_card file");
-		}
-
-		file_attendance_record.open(path_to_attendance_record, std::ios::in | std::ios::out | std::ios::app);
-		if(!file_attendance_record) {
-			throw std::runtime_error("Cannot open attendance_record file");
-		}
-
-		//TODO:
-		//[ ] - Write loads from files for system initializations
-
-
-
+	explicit InstanceGuard(const std::string& lockFilePath) {
+		fd_ = ::open(lockFilePath.c_str(), O_RDWR | O_CREAT, 0666);
+		if (fd_ < 0)
+			throw std::runtime_error(
+				"InstanceGuard: cannot open lock file: " + lockFilePath);
+		lock();
+		writeCount(readCount() + 1);
+		unlock();
 	}
 
-	~SchoolSystem() = default;
-	
-
-
-	void run() {
-		display_head();
-
-		std::string email;
-		std::string password;
-
-		std::cin >> email;
-
-		display_head_pass();
-
-		std::cin >> password;
-
-//TODO: HANDLE LOGIN -> SET PRIVILEGE LEVEL
-//		User user(;
-
-//		user.login(email, password);
-	
-		display_main_menu(privilege);
-		
-
-
-		int decision;
-
-		switch (privilege) {
-		
-			case STUDENT:
-				std::cin >> decision;
-				switch (decision) {
-					case 1: // Check Attendance
-
-						break;
-					case 2: // Check Record
-
-						break;
-				}
-				break;
-
-			case TEACHER:
-				break;
-
-			case ADMIN:
-				break;
-
-			default:
-
-		}
-
+	// Decrements the counter.  Returns true when this was the last instance.
+	bool release() noexcept {
+		if (fd_ < 0) return false;
+		lock();
+		const int remaining = readCount() - 1;
+		writeCount(remaining);
+		unlock();
+		::close(fd_);
+		fd_ = -1;
+		return remaining <= 0;
 	}
 
+	~InstanceGuard() {
+		if (fd_ >= 0) ::close(fd_);
+	}
+
+	InstanceGuard(const InstanceGuard&)            = delete;
+	InstanceGuard& operator=(const InstanceGuard&) = delete;
+	InstanceGuard(InstanceGuard&&)                 = delete;
+	InstanceGuard& operator=(InstanceGuard&&)      = delete;
+};
+
+
+class SchoolSystem {
+public:
+	// ── Path bundle ──────────────────────────────────────────────────────
+	struct DataPaths {
+		std::string students;      // one serialised Student per line
+		std::string admins;        // one serialised Admin per line
+		std::string courses;       // one serialised Course per line
+		std::string attendance;    // one serialised AttendanceRecord per line
+		std::string lockFile;      // shared instance-counter file
+	};
+
+private:
+	// ── Coordination & session ───────────────────────────────────────────
+	DataPaths      paths_;
+	InstanceGuard  guard_;
+	Privilege_type privilege_    {GUEST};
+	std::string    currentUserID_;
+
+	// ── In-memory stores ─────────────────────────────────────────────────
+	std::vector<Student>          students_;
+	std::vector<Admin>            admins_;
+	std::vector<Course>           courses_;
+	std::vector<AttendanceRecord> attendance_;
+
+	// ─────────────────────────────────────────────────────────────────────
+	//  I/O helpers (load / save each entity type)
+	// ─────────────────────────────────────────────────────────────────────
+
+	void loadStudents() {
+		std::ifstream f(paths_.students);
+		if (!f) return;
+		std::string line;
+		while (std::getline(f, line))
+			if (!line.empty())
+				students_.push_back(Student::fromLine(line));
+		// Keep the global student counter in sync so generateSID() is correct.
+		students = static_cast<int>(students_.size());
+	}
+
+	void saveStudents() const {
+		std::ofstream f(paths_.students, std::ios::trunc);
+		for (const auto& s : students_)
+			f << s.serialize() << '\n';
+	}
 
 
 };
