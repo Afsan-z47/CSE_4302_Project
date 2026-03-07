@@ -1,3 +1,8 @@
+#ifndef GRADE_CPP
+#define GRADE_CPP
+
+//TODO: [ ] - Move it to a .h file
+
 #include<iostream>
 #include "assessment.cpp"
 // #include "student.cpp"
@@ -9,6 +14,9 @@ public:
 	// Grade(Student s2,Assessment a2):s1(s2),a1(a2){}
 	char calculate_grade(){
 	double percent = a1.get_percentage();
+
+//	BUG: It can return multiple characters??
+
 	if(percent >= 80) return 'A+';
 	else if(percent >= 75) return 'A';
 	else if(percent >= 70) return 'A-';
@@ -21,3 +29,5 @@ public:
 	else return 'F';
 	}
 };
+
+#endif // GRADE_CPP

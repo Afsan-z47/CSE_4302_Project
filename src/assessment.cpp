@@ -1,6 +1,9 @@
 #ifndef ASSESSMENT_CPP
 #define ASSESSMENT_CPP
 
+//TODO: [ ] - Move it to a .h file
+// 	[ ] - Make the code cleaner and easier to read
+
 #include<iostream>
 #include<iomanip>
 class Assessment{
