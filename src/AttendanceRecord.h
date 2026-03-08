@@ -29,8 +29,8 @@ public:
 //NOTE: ----- Serialise/Deserialise -----
 
 	// Format: studentID|courseCode|date|isPresent(0/1)
-	std::string serialise() const;
-	AttendanceRecord desirialise(std::string &line);
+	std::string serialize() const;
+	AttendanceRecord desirialize(std::string &line) const;
 
 //NOTE: ----- File_ops ------
 	void save(std::ostream &f_out) const override;

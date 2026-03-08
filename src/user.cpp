@@ -27,15 +27,13 @@ bool User::login(std::string uname, std::string pass) const {
 
 
 
-User::User(std::string id, std::string uname, std::string pass, std::string mail)
-	: ID(std::move(id)), 
-	username(std::move(uname)), 
-	email(std::move(mail)), 
-	salt(makeSalt()),
-	passwordHash(hashPass(salt, pass))
+User::User(std::string n, std::string addr, std::string pn,
+	   std::string mail, std::string password, std::string ID
+	   )
+
 {
 
-}
+};
 
 void User::forgotPass() {
 	std::string mail;
@@ -65,23 +63,23 @@ Student::Student(std::string n, std::string fn, std::string mn, std::string addr
 };
 
 Student::~Student(){
-	std::cout << "Thank you for studying in our school. Hope you shine bright in your future." << std::endl;
+	std::cout << "Thank you for studying in our school. Hope you shine bright in your future." << '\n';
 };
 
 
-std::string Student::getName() const { return name; }
+std::string User::getName() const { return username; }
 std::string Student::getFatherName() const { return fatherName; }
 std::string Student::getMotherName() const { return motherName; }
-std::string Student::getID() const { return ID; }
-std::string Student::getAddress() const { return address; }
-std::string Student::getPhoneNumber() const { return phoneNumber; }
+std::string User::getID() const { return ID; }
+std::string User::getAddress() const { return address; }
+std::string User::getPhoneNumber() const { return phoneNumber; }
 
-void Student::setName(const std::string& n) { name = n; }
+void User::setName(const std::string& n) { username = n; }
 void Student::setFatherName(const std::string& fn) { fatherName = fn; }
 void Student::setMotherName(const std::string& mn) { motherName = mn; }
-void Student::setID(const std::string& id) { ID = id; }
-void Student::setAddress(const std::string& addr) { address = addr; }
-void Student::setPhoneNumber(const std::string& pn) { phoneNumber = pn; }
+void User::setID(const std::string& id) { ID = id; }
+void User::setAddress(const std::string& addr) { address = addr; }
+void User::setPhoneNumber(const std::string& pn) { phoneNumber = pn; }
 
 
 int students = 0; 

@@ -1,6 +1,8 @@
 #ifndef __COURSE__
 #define __COURSE__
 
+//TODO: [ ] - Build a .h file
+
 #include"user.h"
 #include<iostream>
 #include <vector>

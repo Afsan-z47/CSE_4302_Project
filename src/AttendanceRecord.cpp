@@ -20,7 +20,7 @@ void AttendanceRecord::displayAttendance() const {
 //NOTE: ----- Serialise/Deserialise -----
 // Format: studentID|courseCode|date|isPresent(0/1)
 
-std::string AttendanceRecord::serialise() const {
+std::string AttendanceRecord::serialize() const {
 	std::ostringstream ss;
 	ss << studentID  << '|'
 		<< courseCode << '|'
@@ -29,7 +29,7 @@ std::string AttendanceRecord::serialise() const {
 	return ss.str();
 }
 
-AttendanceRecord desirialise(std::string &line) {
+AttendanceRecord desirialize(std::string &line) {
 	std::stringstream ss(line);
 
 	std::string studentID;
@@ -49,11 +49,11 @@ AttendanceRecord desirialise(std::string &line) {
 
 //NOTE: ----- File_ops ------
 void AttendanceRecord::save(std::ostream &f_out) const  {
-	f_out << serialise();
+	f_out << serialize();
 }
 
 AttendanceRecord AttendanceRecord::load(std::istream &f_in)  {
 	std::string line;
 	f_in >> line;
-	return desirialise(line);
+	return desirialize(line);
 }
