@@ -79,7 +79,6 @@ Student::Student(
     const std::string &id
 )
     : User(id, n, password, mail),
-      name(n),
       fatherName(fn),
       motherName(mn),
       address(addr),
@@ -92,13 +91,13 @@ Student::~Student() {
 	          << std::endl;
 }
 
-std::string Student::getName() const { return name; }
+std::string Student::getName() const { return username; }
 std::string Student::getFatherName() const { return fatherName; }
 std::string Student::getMotherName() const { return motherName; }
 std::string Student::getAddress() const { return address; }
 std::string Student::getPhoneNumber() const { return phoneNumber; }
 
-void Student::setName(const std::string &n) { name = n; }
+void Student::setName(const std::string &n) { username = n; }
 void Student::setFatherName(const std::string &fn) { fatherName = fn; }
 void Student::setMotherName(const std::string &mn) { motherName = mn; }
 void Student::setAddress(const std::string &addr) { address = addr; }
@@ -124,26 +123,25 @@ Teacher::Teacher(
     const std::string &c
 )
     : User(id, n, ps, mail),
-      name(n),
       age(a),
       phone_number(p),
       course(c),
       salary(s) {}
 
 void Teacher::displayInfo() const {
-	std::cout << "Teacher ID: " << ID << std::endl;
-	std::cout << "Name: " << name << std::endl;
-	std::cout << "Age: " << age << std::endl;
-	std::cout << "Course: " << course << std::endl;
-	std::cout << "Phone: " << phone_number << std::endl;
-	std::cout << "Salary: " << salary << std::endl;
+	std::cout << "Teacher ID: " << ID           << std::endl;
+	std::cout << "Name: "       << username     << std::endl;
+	std::cout << "Age: "        << age          << std::endl;
+	std::cout << "Course: "     << course       << std::endl;
+	std::cout << "Phone: "      << phone_number << std::endl;
+	std::cout << "Salary: "     << salary       << std::endl;
 }
 
 void Teacher::setCourse(const std::string &c) { course = c; }
 void Teacher::updateSalary(int newSalary) { salary = newSalary; }
 
 void Teacher::contact() const {
-	std::cout << "Calling " << name << " at " << phone_number << std::endl;
+	std::cout << "Calling " << username << " at " << phone_number << std::endl;
 }
 
 void Teacher::getType() const { std::cout << "User is of teacher-type" << std::endl; }
@@ -157,8 +155,7 @@ Admin::Admin(
     const std::string &mail
 )
     : User(id, uname, pass, mail),
-      adminID(id),
-      name(uname) {}
+      adminID(id) {}
 
 std::string Admin::generatePass(const std::string &phn) {
 	std::string demo = phn;
@@ -214,4 +211,177 @@ std::string Admin::addTeacher(
 	return id;
 }
 
-void Admin::getType() const { std::cout << "User is of admin-type" << std::endl; }
+void Admin::getType() const { std::cout << "User is of admin-type" << '\n'; }
+
+// ─── Student copy/move ───────────────────────────────────────────────────────
+
+Student::Student(const Student &other)
+    : User(other),
+      fatherName(other.fatherName),
+      motherName(other.motherName),
+      address(other.address),
+      phoneNumber(other.phoneNumber) {}
+
+Student::Student(Student &&other) noexcept
+    : User(other),
+      fatherName(std::move(other.fatherName)),
+      motherName(std::move(other.motherName)),
+      address(std::move(other.address)),
+      phoneNumber(std::move(other.phoneNumber)) {}
+
+// ─── Student File_ops ─────────────────────────────────────────────────────────
+
+// Format: ID|username|email|salt|passwordHash|fatherName|motherName|address|phoneNumber
+std::string Student::serialize() const {
+	std::ostringstream oss;
+	oss 	<< ID 		<< '|' 
+		<< username 	<< '|' 
+		<< email 	<< '|' 
+		<< salt 	<< '|' 
+		<< passwordHash	<< '|' 
+		<< fatherName 	<< '|' 
+		<< motherName 	<< '|' 
+		<< address 	<< '|' 
+		<< phoneNumber;
+	
+	return oss.str();
+}
+
+Student Student::deserialize(std::string &line) const {
+	std::stringstream ss(line);
+	Student           ret;
+	std::string       hashStr;
+
+	std::getline(ss, ret.ID,           '|');
+	std::getline(ss, ret.username,     '|');
+	std::getline(ss, ret.email,        '|');
+	std::getline(ss, ret.salt,         '|');
+	std::getline(ss, hashStr,          '|');
+	std::getline(ss, ret.fatherName,   '|');
+	std::getline(ss, ret.motherName,   '|');
+	std::getline(ss, ret.address,      '|');
+	std::getline(ss, ret.phoneNumber,  '|');
+
+	ret.passwordHash = std::stoull(hashStr);
+	return ret;
+}
+
+void Student::save(std::ostream &f_out) const { f_out << serialize(); }
+
+Student Student::load(std::istream &f_in) {
+	std::string line;
+	std::getline(f_in, line);
+	return deserialize(line);
+}
+
+// ─── Teacher copy/move ───────────────────────────────────────────────────────
+
+Teacher::Teacher(const Teacher &other)
+    : User(other),
+      age(other.age),
+      phone_number(other.phone_number),
+      course(other.course),
+      salary(other.salary) {}
+
+Teacher::Teacher(Teacher &&other) noexcept
+    : User(other),
+      age(other.age),
+      phone_number(std::move(other.phone_number)),
+      course(std::move(other.course)),
+      salary(other.salary) {}
+
+// ─── Teacher File_ops ─────────────────────────────────────────────────────────
+
+// Format: ID|username|email|salt|passwordHash|age|phone_number|course|salary
+std::string Teacher::serialize() const {
+	std::ostringstream oss;
+	oss 	<< ID 		<< '|' 
+		<< username 	<< '|' 
+		<< email 	<< '|' 
+		<< salt 	<< '|' 
+		<< passwordHash << '|' 
+		<< age 		<< '|' 
+		<< phone_number << '|' 
+		<< course 	<< '|' 
+		<< salary;
+	
+	return oss.str();
+}
+
+Teacher Teacher::deserialize(std::string &line) const {
+	std::stringstream ss(line);
+	Teacher           ret;
+	std::string       hashStr, ageStr, salStr;
+
+	std::getline(ss, ret.ID,           '|');
+	std::getline(ss, ret.username,     '|');
+	std::getline(ss, ret.email,        '|');
+	std::getline(ss, ret.salt,         '|');
+	std::getline(ss, hashStr,          '|');
+	std::getline(ss, ageStr,           '|');
+	std::getline(ss, ret.phone_number, '|');
+	std::getline(ss, ret.course,       '|');
+	std::getline(ss, salStr,           '|');
+
+	ret.passwordHash = std::stoull(hashStr);
+	ret.age          = std::stoi(ageStr);
+	ret.salary       = std::stoi(salStr);
+	return ret;
+}
+
+void Teacher::save(std::ostream &f_out) const { f_out << serialize(); }
+
+Teacher Teacher::load(std::istream &f_in) {
+	std::string line;
+	std::getline(f_in, line);
+	return deserialize(line);
+}
+
+// ─── Admin copy/move ─────────────────────────────────────────────────────────
+
+Admin::Admin(const Admin &other)
+    : User(other),
+      adminID(other.adminID) {}
+
+Admin::Admin(Admin &&other) noexcept
+    : User(other),
+      adminID(std::move(other.adminID)) {}
+
+// ─── Admin File_ops ───────────────────────────────────────────────────────────
+
+// Format: ID|username|email|salt|passwordHash|adminID
+std::string Admin::serialize() const {
+	std::ostringstream oss;
+	oss 	<< ID 		<< '|' 
+		<< username 	<< '|' 
+		<< email 	<< '|' 
+		<< salt 	<< '|' 
+		<< passwordHash << '|' 
+		<< adminID;
+	
+	return oss.str();
+}
+
+Admin Admin::deserialize(std::string &line) const {
+	std::stringstream ss(line);
+	Admin             ret("", "", "", "");
+	std::string       hashStr;
+
+	std::getline(ss, ret.ID,       '|');
+	std::getline(ss, ret.username, '|');
+	std::getline(ss, ret.email,    '|');
+	std::getline(ss, ret.salt,     '|');
+	std::getline(ss, hashStr,      '|');
+	std::getline(ss, ret.adminID,  '|');
+
+	ret.passwordHash = std::stoull(hashStr);
+	return ret;
+}
+
+void Admin::save(std::ostream &f_out) const { f_out << serialize(); }
+
+Admin Admin::load(std::istream &f_in) {
+	std::string line;
+	std::getline(f_in, line);
+	return deserialize(line);
+}
