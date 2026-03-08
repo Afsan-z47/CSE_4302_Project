@@ -23,20 +23,20 @@
  *   [ ] Grade/report card is stubbed pending Assessment ↔ Course linkage.
  */
 
-#include "assessment.cpp"   // defines Assessment
-#include "grade.cpp"        // defines Grade  (includes assessment.cpp internally)
-#include "course.cpp"       // defines Course (includes grade.cpp internally)
+#include "assessment.cpp" // defines Assessment
+#include "course.cpp"     // defines Course (includes grade.cpp internally)
+#include "grade.cpp"      // defines Grade  (includes assessment.cpp internally)
 
-#include "user.h"
 #include "AttendanceRecord.h"
 #include "file_ops.h"
+#include "user.h"
 
-#include <sys/file.h>   // flock(2)
-#include <fcntl.h>      // open(2)
-#include <unistd.h>     // close, ftruncate, lseek, read, write
+#include <fcntl.h>    // open(2)
+#include <sys/file.h> // flock(2)
+#include <unistd.h>   // close, ftruncate, lseek, read, write
 
 #include <cstdint>
-#include <cstdlib>      // atoi
+#include <cstdlib> // atoi
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -46,8 +46,6 @@
 #include <string>
 #include <vector>
 
-
-
 enum Privilege_type : uint8_t {
 	GUEST   = 0,
 	STUDENT = 1,
@@ -55,7 +53,7 @@ enum Privilege_type : uint8_t {
 	ADMIN   = 3,
 };
 
-//FIXME: Will think about these stuff later
+// FIXME: Will think about these stuff later
 //	For now, its something to move around
 
 // ═══════════════════════════════════════════════════════════════════
@@ -73,7 +71,7 @@ class InstanceGuard {
 	int fd_{-1};
 
 	// Exclusive lock / unlock on the file descriptor.
-	void lock()   { ::flock(fd_, LOCK_EX); }
+	void lock() { ::flock(fd_, LOCK_EX); }
 	void unlock() { ::flock(fd_, LOCK_UN); }
 
 	int readCount() {
@@ -85,7 +83,8 @@ class InstanceGuard {
 	}
 
 	void writeCount(int n) {
-		if (n < 0) n = 0;
+		if (n < 0)
+			n = 0;
 		::lseek(fd_, 0, SEEK_SET);
 		::ftruncate(fd_, 0);
 		const std::string s = std::to_string(n);
@@ -93,11 +92,10 @@ class InstanceGuard {
 	}
 
 public:
-	explicit InstanceGuard(const std::string& lockFilePath) {
+	explicit InstanceGuard(const std::string &lockFilePath) {
 		fd_ = ::open(lockFilePath.c_str(), O_RDWR | O_CREAT, 0666);
 		if (fd_ < 0)
-			throw std::runtime_error(
-				"InstanceGuard: cannot open lock file: " + lockFilePath);
+			throw std::runtime_error("InstanceGuard: cannot open lock file: " + lockFilePath);
 		lock();
 		writeCount(readCount() + 1);
 		unlock();
@@ -105,7 +103,8 @@ public:
 
 	// Decrements the counter.  Returns true when this was the last instance.
 	bool release() noexcept {
-		if (fd_ < 0) return false;
+		if (fd_ < 0)
+			return false;
 		lock();
 		const int remaining = readCount() - 1;
 		writeCount(remaining);
@@ -116,32 +115,32 @@ public:
 	}
 
 	~InstanceGuard() {
-		if (fd_ >= 0) ::close(fd_);
+		if (fd_ >= 0)
+			::close(fd_);
 	}
 
-	InstanceGuard(const InstanceGuard&)            = delete;
-	InstanceGuard& operator=(const InstanceGuard&) = delete;
-	InstanceGuard(InstanceGuard&&)                 = delete;
-	InstanceGuard& operator=(InstanceGuard&&)      = delete;
+	InstanceGuard(const InstanceGuard &)            = delete;
+	InstanceGuard &operator=(const InstanceGuard &) = delete;
+	InstanceGuard(InstanceGuard &&)                 = delete;
+	InstanceGuard &operator=(InstanceGuard &&)      = delete;
 };
-
 
 class SchoolSystem {
 public:
 	// ── Path bundle ──────────────────────────────────────────────────────
 	struct DataPaths {
-		std::string students;      // one serialised Student per line
-		std::string admins;        // one serialised Admin per line
-		std::string courses;       // one serialised Course per line
-		std::string attendance;    // one serialised AttendanceRecord per line
-		std::string lockFile;      // shared instance-counter file
+		std::string students;   // one serialised Student per line
+		std::string admins;     // one serialised Admin per line
+		std::string courses;    // one serialised Course per line
+		std::string attendance; // one serialised AttendanceRecord per line
+		std::string lockFile;   // shared instance-counter file
 	};
 
 private:
 	// ── Coordination & session ───────────────────────────────────────────
 	DataPaths      paths_;
 	InstanceGuard  guard_;
-	Privilege_type privilege_    {GUEST};
+	Privilege_type privilege_{GUEST};
 	std::string    currentUserID_;
 
 	// ── In-memory stores ─────────────────────────────────────────────────
@@ -156,7 +155,8 @@ private:
 
 	void loadStudents() {
 		std::ifstream f(paths_.students);
-		if (!f) return;
+		if (!f)
+			return;
 		std::string line;
 		while (std::getline(f, line))
 			if (!line.empty())
@@ -167,9 +167,7 @@ private:
 
 	void saveStudents() const {
 		std::ofstream f(paths_.students, std::ios::trunc);
-		for (const auto& s : students_)
+		for (const auto &s : students_)
 			f << s.serialize() << '\n';
 	}
-
-
 };
