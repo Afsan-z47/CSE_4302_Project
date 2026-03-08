@@ -26,10 +26,9 @@ User::User(
 )
     : ID(id),
       username(uname),
-      email(mail) {
-	salt         = makeSalt();
-	passwordHash = hashPass(salt, pass);
-}
+      email(mail),
+      salt(makeSalt()),
+      passwordHash(hashPass(salt, pass)) {}
 
 void User::setPassword(const std::string &pass) { passwordHash = hashPass(salt, pass); }
 
