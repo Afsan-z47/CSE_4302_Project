@@ -8,7 +8,7 @@
 //--------------------------------  USER ----------------------------------------
 
 size_t User::hashPass(const std::string &salt, const std::string &pass) {
-	return std::hash<std::string>{}(salt + pass);
+    return std::hash<std::string>{}(salt + pass);
 }
 
 std::string User::makeSalt() { return std::to_string(rand()) + std::to_string(rand()); }
@@ -16,7 +16,7 @@ std::string User::makeSalt() { return std::to_string(rand()) + std::to_string(ra
 void User::setPassword(const std::string &pass) { passwordHash = hashPass(salt, pass); }
 
 bool User::login(std::string uname, std::string pass) const {
-	return (uname == username) && (passwordHash == hashPass(salt, pass));
+    return (uname == username) && (passwordHash == hashPass(salt, pass));
 }
 
 User::User(
@@ -33,15 +33,15 @@ User::User(
 };
 
 void User::forgotPass() {
-	std::string mail;
-	std::cin >> mail;
-	if (mail == email) {
-		std::string newPass = "Tmp@" + std::to_string(rand() % 10000);
-		setPassword(newPass);
-		std::cout << "Password reset. Temporary password: " << newPass << std::endl;
-	} else {
-		std::cout << "Email not found.\n";
-	}
+    std::string mail;
+    std::cin >> mail;
+    if (mail == email) {
+        std::string newPass = "Tmp@" + std::to_string(rand() % 10000);
+        setPassword(newPass);
+        std::cout << "Password reset. Temporary password: " << newPass << std::endl;
+    } else {
+        std::cout << "Email not found.\n";
+    }
 }
 
 //--------------------------------  STUDENT ----------------------------------------
@@ -58,12 +58,12 @@ Student::Student(
 )
     : name(n), fatherName(fn), motherName(mn), address(addr), phoneNumber(pn), email(mail),
       User(ID, n, password, mail) {
-	std::cout << "Welcome to our school" << std::endl;
+    std::cout << "Welcome to our school" << std::endl;
 };
 
 Student::~Student() {
-	std::cout << "Thank you for studying in our school. Hope you shine bright in your future."
-	          << '\n';
+    std::cout << "Thank you for studying in our school. Hope you shine bright in your future."
+              << '\n';
 };
 
 std::string User::getName() const { return username; }
@@ -85,25 +85,25 @@ int students = 0;
 //--------------------------------  ADMIN ----------------------------------------
 
 std::string Admin::generatePass(std::string phn) {
-	std::string demo = phn;
-	for (int i = 0; i < demo.length() / 2; i++) {
-		char temp                   = demo[i];
-		demo[i]                     = demo[demo.length() - i - 1];
-		demo[demo.length() - i - 1] = temp;
-	}
+    std::string demo = phn;
+    for (int i = 0; i < demo.length() / 2; i++) {
+        char temp                   = demo[i];
+        demo[i]                     = demo[demo.length() - i - 1];
+        demo[demo.length() - i - 1] = temp;
+    }
 
-	int               r = rand() % 1000;
-	std::stringstream ss;
-	ss << std::setw(3) << std::setfill('0') << r;
-	return demo + ss.str();
+    int               r = rand() % 1000;
+    std::stringstream ss;
+    ss << std::setw(3) << std::setfill('0') << r;
+    return demo + ss.str();
 }
 
 std::string Admin::generateSID() {
-	students++;
-	std::stringstream ss;
-	ss << "123000" << std::setw(4) << std::setfill('0') << students;
+    students++;
+    std::stringstream ss;
+    ss << "123000" << std::setw(4) << std::setfill('0') << students;
 
-	return ss.str();
+    return ss.str();
 }
 
 void Admin::addStudent(
@@ -114,7 +114,7 @@ void Admin::addStudent(
     std::string phone,
     std::string mail
 ) {
-	std::string id   = generateSID();
-	std::string pass = generatePass(phone);
-	Student     s(nm, fn, mn, addr, phone, mail, pass, id);
+    std::string id   = generateSID();
+    std::string pass = generatePass(phone);
+    Student     s(nm, fn, mn, addr, phone, mail, pass, id);
 }

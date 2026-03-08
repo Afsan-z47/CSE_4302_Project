@@ -47,10 +47,10 @@
 #include <vector>
 
 enum Privilege_type : uint8_t {
-	GUEST   = 0,
-	STUDENT = 1,
-	TEACHER = 2,
-	ADMIN   = 3,
+    GUEST   = 0,
+    STUDENT = 1,
+    TEACHER = 2,
+    ADMIN   = 3,
 };
 
 // FIXME: Will think about these stuff later
@@ -68,106 +68,106 @@ enum Privilege_type : uint8_t {
 // ═══════════════════════════════════════════════════════════════════
 
 class InstanceGuard {
-	int fd_{-1};
+    int fd_{-1};
 
-	// Exclusive lock / unlock on the file descriptor.
-	void lock() { ::flock(fd_, LOCK_EX); }
-	void unlock() { ::flock(fd_, LOCK_UN); }
+    // Exclusive lock / unlock on the file descriptor.
+    void lock() { ::flock(fd_, LOCK_EX); }
+    void unlock() { ::flock(fd_, LOCK_UN); }
 
-	int readCount() {
-		::lseek(fd_, 0, SEEK_SET);
-		char buf[32]{};
-		::read(fd_, buf, sizeof(buf) - 1);
-		int n = std::atoi(buf);
-		return n < 0 ? 0 : n;
-	}
+    int readCount() {
+        ::lseek(fd_, 0, SEEK_SET);
+        char buf[32]{};
+        ::read(fd_, buf, sizeof(buf) - 1);
+        int n = std::atoi(buf);
+        return n < 0 ? 0 : n;
+    }
 
-	void writeCount(int n) {
-		if (n < 0)
-			n = 0;
-		::lseek(fd_, 0, SEEK_SET);
-		::ftruncate(fd_, 0);
-		const std::string s = std::to_string(n);
-		::write(fd_, s.c_str(), s.size());
-	}
+    void writeCount(int n) {
+        if (n < 0)
+            n = 0;
+        ::lseek(fd_, 0, SEEK_SET);
+        ::ftruncate(fd_, 0);
+        const std::string s = std::to_string(n);
+        ::write(fd_, s.c_str(), s.size());
+    }
 
 public:
-	explicit InstanceGuard(const std::string &lockFilePath) {
-		fd_ = ::open(lockFilePath.c_str(), O_RDWR | O_CREAT, 0666);
-		if (fd_ < 0)
-			throw std::runtime_error("InstanceGuard: cannot open lock file: " + lockFilePath);
-		lock();
-		writeCount(readCount() + 1);
-		unlock();
-	}
+    explicit InstanceGuard(const std::string &lockFilePath) {
+        fd_ = ::open(lockFilePath.c_str(), O_RDWR | O_CREAT, 0666);
+        if (fd_ < 0)
+            throw std::runtime_error("InstanceGuard: cannot open lock file: " + lockFilePath);
+        lock();
+        writeCount(readCount() + 1);
+        unlock();
+    }
 
-	// Decrements the counter.  Returns true when this was the last instance.
-	bool release() noexcept {
-		if (fd_ < 0)
-			return false;
-		lock();
-		const int remaining = readCount() - 1;
-		writeCount(remaining);
-		unlock();
-		::close(fd_);
-		fd_ = -1;
-		return remaining <= 0;
-	}
+    // Decrements the counter.  Returns true when this was the last instance.
+    bool release() noexcept {
+        if (fd_ < 0)
+            return false;
+        lock();
+        const int remaining = readCount() - 1;
+        writeCount(remaining);
+        unlock();
+        ::close(fd_);
+        fd_ = -1;
+        return remaining <= 0;
+    }
 
-	~InstanceGuard() {
-		if (fd_ >= 0)
-			::close(fd_);
-	}
+    ~InstanceGuard() {
+        if (fd_ >= 0)
+            ::close(fd_);
+    }
 
-	InstanceGuard(const InstanceGuard &)            = delete;
-	InstanceGuard &operator=(const InstanceGuard &) = delete;
-	InstanceGuard(InstanceGuard &&)                 = delete;
-	InstanceGuard &operator=(InstanceGuard &&)      = delete;
+    InstanceGuard(const InstanceGuard &)            = delete;
+    InstanceGuard &operator=(const InstanceGuard &) = delete;
+    InstanceGuard(InstanceGuard &&)                 = delete;
+    InstanceGuard &operator=(InstanceGuard &&)      = delete;
 };
 
 class SchoolSystem {
 public:
-	// ── Path bundle ──────────────────────────────────────────────────────
-	struct DataPaths {
-		std::string students;   // one serialised Student per line
-		std::string admins;     // one serialised Admin per line
-		std::string courses;    // one serialised Course per line
-		std::string attendance; // one serialised AttendanceRecord per line
-		std::string lockFile;   // shared instance-counter file
-	};
+    // ── Path bundle ──────────────────────────────────────────────────────
+    struct DataPaths {
+        std::string students;   // one serialised Student per line
+        std::string admins;     // one serialised Admin per line
+        std::string courses;    // one serialised Course per line
+        std::string attendance; // one serialised AttendanceRecord per line
+        std::string lockFile;   // shared instance-counter file
+    };
 
 private:
-	// ── Coordination & session ───────────────────────────────────────────
-	DataPaths      paths_;
-	InstanceGuard  guard_;
-	Privilege_type privilege_{GUEST};
-	std::string    currentUserID_;
+    // ── Coordination & session ───────────────────────────────────────────
+    DataPaths      paths_;
+    InstanceGuard  guard_;
+    Privilege_type privilege_{GUEST};
+    std::string    currentUserID_;
 
-	// ── In-memory stores ─────────────────────────────────────────────────
-	std::vector<Student>          students_;
-	std::vector<Admin>            admins_;
-	std::vector<Course>           courses_;
-	std::vector<AttendanceRecord> attendance_;
+    // ── In-memory stores ─────────────────────────────────────────────────
+    std::vector<Student>          students_;
+    std::vector<Admin>            admins_;
+    std::vector<Course>           courses_;
+    std::vector<AttendanceRecord> attendance_;
 
-	// ─────────────────────────────────────────────────────────────────────
-	//  I/O helpers (load / save each entity type)
-	// ─────────────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────────────
+    //  I/O helpers (load / save each entity type)
+    // ─────────────────────────────────────────────────────────────────────
 
-	void loadStudents() {
-		std::ifstream f(paths_.students);
-		if (!f)
-			return;
-		std::string line;
-		while (std::getline(f, line))
-			if (!line.empty())
-				students_.push_back(Student::fromLine(line));
-		// Keep the global student counter in sync so generateSID() is correct.
-		students = static_cast<int>(students_.size());
-	}
+    void loadStudents() {
+        std::ifstream f(paths_.students);
+        if (!f)
+            return;
+        std::string line;
+        while (std::getline(f, line))
+            if (!line.empty())
+                students_.push_back(Student::fromLine(line));
+        // Keep the global student counter in sync so generateSID() is correct.
+        students = static_cast<int>(students_.size());
+    }
 
-	void saveStudents() const {
-		std::ofstream f(paths_.students, std::ios::trunc);
-		for (const auto &s : students_)
-			f << s.serialize() << '\n';
-	}
+    void saveStudents() const {
+        std::ofstream f(paths_.students, std::ios::trunc);
+        for (const auto &s : students_)
+            f << s.serialize() << '\n';
+    }
 };
