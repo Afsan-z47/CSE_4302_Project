@@ -21,12 +21,13 @@
 - Aahil Zaman
   	- [ ] Course
   	- [ ] Grade
+  	- [ ] Assessment
 
 - Sami Rahman
-	- [ ] TBD
+    - [ ] AttendanceRecord
 
 - Najmus Sakib
-	- [ ] TBD
+	- [ ] SchoolSystem
 
 # School Management System
 ----------------------------

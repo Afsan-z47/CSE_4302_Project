@@ -1,5 +1,10 @@
-#include <iostream>
+#include "schoolsystem.cpp"
 
-int main() {
-	std::cout << "Hello world! over and over again!" << '\n';
+auto main() -> int {
+    srand((unsigned)time(nullptr));
+	User new_user("001", "Azizul", "123", "haki@iut-dhaka.edu");
+	std::cout << "Running main.cpp\n";
+	
+//	SchoolSystem SYSTEM;
+
 }
