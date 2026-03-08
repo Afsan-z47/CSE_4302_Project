@@ -11,7 +11,12 @@ std::size_t User::hashPass(const std::string &salt, const std::string &pass) {
 	return std::hash<std::string>{}(salt + pass);
 }
 
-User::User() : ID(""), username(""), email(""), salt(""), passwordHash(0) {}
+User::User()
+    : ID(""),
+      username(""),
+      email(""),
+      salt(""),
+      passwordHash(0) {}
 
 User::User(
     const std::string &id,
@@ -19,7 +24,9 @@ User::User(
     const std::string &pass,
     const std::string &mail
 )
-    : ID(id), username(uname), email(mail) {
+    : ID(id),
+      username(uname),
+      email(mail) {
 	salt         = makeSalt();
 	passwordHash = hashPass(salt, pass);
 }
@@ -59,7 +66,8 @@ std::string User::getEmail() const { return email; }
 
 // ─── Student ─────────────────────────────────────────────────────────────────
 
-Student::Student() : User() {}
+Student::Student()
+    : User() {}
 
 Student::Student(
     const std::string &n,
@@ -71,7 +79,11 @@ Student::Student(
     const std::string &password,
     const std::string &id
 )
-    : User(id, n, password, mail), name(n), fatherName(fn), motherName(mn), address(addr),
+    : User(id, n, password, mail),
+      name(n),
+      fatherName(fn),
+      motherName(mn),
+      address(addr),
       phoneNumber(pn) {
 	std::cout << "Welcome to our school, " << n << "!" << std::endl;
 }
@@ -97,7 +109,10 @@ void Student::getType() const { std::cout << "User is of a student-type" << std:
 
 // ─── Teacher ─────────────────────────────────────────────────────────────────
 
-Teacher::Teacher() : User(), age(0), salary(0) {}
+Teacher::Teacher()
+    : User(),
+      age(0),
+      salary(0) {}
 
 Teacher::Teacher(
     const std::string &id,
@@ -109,7 +124,12 @@ Teacher::Teacher(
     const std::string &mail,
     const std::string &c
 )
-    : User(id, n, ps, mail), name(n), age(a), phone_number(p), course(c), salary(s) {}
+    : User(id, n, ps, mail),
+      name(n),
+      age(a),
+      phone_number(p),
+      course(c),
+      salary(s) {}
 
 void Teacher::displayInfo() const {
 	std::cout << "Teacher ID: " << ID << std::endl;
@@ -137,7 +157,9 @@ Admin::Admin(
     const std::string &pass,
     const std::string &mail
 )
-    : User(id, uname, pass, mail), adminID(id), name(uname) {}
+    : User(id, uname, pass, mail),
+      adminID(id),
+      name(uname) {}
 
 std::string Admin::generatePass(const std::string &phn) {
 	std::string demo = phn;

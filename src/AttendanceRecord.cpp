@@ -4,7 +4,9 @@
 #include <utility>
 
 AttendanceRecord::AttendanceRecord(std::string sID, std::string cCode, std::string d, bool status)
-    : studentID(std::move(sID)), courseCode(std::move(cCode)), date(std::move(d)),
+    : studentID(std::move(sID)),
+      courseCode(std::move(cCode)),
+      date(std::move(d)),
       isPresent(status) {}
 
 void AttendanceRecord::displayAttendance() const {

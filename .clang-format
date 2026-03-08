@@ -11,10 +11,13 @@ AlignConsecutiveDeclarations: Consecutive
 SortIncludes: CaseInsensitive
 SpaceBeforeParens: ControlStatements
 Cpp11BracedListStyle: true
-
 # --- Multi-line arguments and parameters ---
 BinPackArguments: false
 BinPackParameters: false
 AllowAllArgumentsOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
 AlignAfterOpenBracket: BlockIndent
+# --- Constructor initialiser lists ---
+BreakConstructorInitializers: BeforeColon
+PackConstructorInitializers: Never
+ConstructorInitializerIndentWidth: 4
