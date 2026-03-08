@@ -129,12 +129,14 @@ Teacher::Teacher(
       salary(s) {}
 
 void Teacher::displayInfo() const {
+	// clang-format off
 	std::cout << "Teacher ID: " << ID           << std::endl;
 	std::cout << "Name: "       << username     << std::endl;
 	std::cout << "Age: "        << age          << std::endl;
 	std::cout << "Course: "     << course       << std::endl;
 	std::cout << "Phone: "      << phone_number << std::endl;
 	std::cout << "Salary: "     << salary       << std::endl;
+	// clang-format on
 }
 
 void Teacher::setCourse(const std::string &c) { course = c; }
@@ -234,16 +236,9 @@ Student::Student(Student &&other) noexcept
 // Format: ID|username|email|salt|passwordHash|fatherName|motherName|address|phoneNumber
 std::string Student::serialize() const {
 	std::ostringstream oss;
-	oss 	<< ID 		<< '|' 
-		<< username 	<< '|' 
-		<< email 	<< '|' 
-		<< salt 	<< '|' 
-		<< passwordHash	<< '|' 
-		<< fatherName 	<< '|' 
-		<< motherName 	<< '|' 
-		<< address 	<< '|' 
-		<< phoneNumber;
-	
+	oss << ID << '|' << username << '|' << email << '|' << salt << '|' << passwordHash << '|'
+	    << fatherName << '|' << motherName << '|' << address << '|' << phoneNumber;
+
 	return oss.str();
 }
 
@@ -252,15 +247,15 @@ Student Student::deserialize(std::string &line) const {
 	Student           ret;
 	std::string       hashStr;
 
-	std::getline(ss, ret.ID,           '|');
-	std::getline(ss, ret.username,     '|');
-	std::getline(ss, ret.email,        '|');
-	std::getline(ss, ret.salt,         '|');
-	std::getline(ss, hashStr,          '|');
-	std::getline(ss, ret.fatherName,   '|');
-	std::getline(ss, ret.motherName,   '|');
-	std::getline(ss, ret.address,      '|');
-	std::getline(ss, ret.phoneNumber,  '|');
+	std::getline(ss, ret.ID, '|');
+	std::getline(ss, ret.username, '|');
+	std::getline(ss, ret.email, '|');
+	std::getline(ss, ret.salt, '|');
+	std::getline(ss, hashStr, '|');
+	std::getline(ss, ret.fatherName, '|');
+	std::getline(ss, ret.motherName, '|');
+	std::getline(ss, ret.address, '|');
+	std::getline(ss, ret.phoneNumber, '|');
 
 	ret.passwordHash = std::stoull(hashStr);
 	return ret;
@@ -295,16 +290,9 @@ Teacher::Teacher(Teacher &&other) noexcept
 // Format: ID|username|email|salt|passwordHash|age|phone_number|course|salary
 std::string Teacher::serialize() const {
 	std::ostringstream oss;
-	oss 	<< ID 		<< '|' 
-		<< username 	<< '|' 
-		<< email 	<< '|' 
-		<< salt 	<< '|' 
-		<< passwordHash << '|' 
-		<< age 		<< '|' 
-		<< phone_number << '|' 
-		<< course 	<< '|' 
-		<< salary;
-	
+	oss << ID << '|' << username << '|' << email << '|' << salt << '|' << passwordHash << '|' << age
+	    << '|' << phone_number << '|' << course << '|' << salary;
+
 	return oss.str();
 }
 
@@ -313,15 +301,15 @@ Teacher Teacher::deserialize(std::string &line) const {
 	Teacher           ret;
 	std::string       hashStr, ageStr, salStr;
 
-	std::getline(ss, ret.ID,           '|');
-	std::getline(ss, ret.username,     '|');
-	std::getline(ss, ret.email,        '|');
-	std::getline(ss, ret.salt,         '|');
-	std::getline(ss, hashStr,          '|');
-	std::getline(ss, ageStr,           '|');
+	std::getline(ss, ret.ID, '|');
+	std::getline(ss, ret.username, '|');
+	std::getline(ss, ret.email, '|');
+	std::getline(ss, ret.salt, '|');
+	std::getline(ss, hashStr, '|');
+	std::getline(ss, ageStr, '|');
 	std::getline(ss, ret.phone_number, '|');
-	std::getline(ss, ret.course,       '|');
-	std::getline(ss, salStr,           '|');
+	std::getline(ss, ret.course, '|');
+	std::getline(ss, salStr, '|');
 
 	ret.passwordHash = std::stoull(hashStr);
 	ret.age          = std::stoi(ageStr);
@@ -352,13 +340,9 @@ Admin::Admin(Admin &&other) noexcept
 // Format: ID|username|email|salt|passwordHash|adminID
 std::string Admin::serialize() const {
 	std::ostringstream oss;
-	oss 	<< ID 		<< '|' 
-		<< username 	<< '|' 
-		<< email 	<< '|' 
-		<< salt 	<< '|' 
-		<< passwordHash << '|' 
-		<< adminID;
-	
+	oss << ID << '|' << username << '|' << email << '|' << salt << '|' << passwordHash << '|'
+	    << adminID;
+
 	return oss.str();
 }
 
@@ -367,12 +351,12 @@ Admin Admin::deserialize(std::string &line) const {
 	Admin             ret("", "", "", "");
 	std::string       hashStr;
 
-	std::getline(ss, ret.ID,       '|');
+	std::getline(ss, ret.ID, '|');
 	std::getline(ss, ret.username, '|');
-	std::getline(ss, ret.email,    '|');
-	std::getline(ss, ret.salt,     '|');
-	std::getline(ss, hashStr,      '|');
-	std::getline(ss, ret.adminID,  '|');
+	std::getline(ss, ret.email, '|');
+	std::getline(ss, ret.salt, '|');
+	std::getline(ss, hashStr, '|');
+	std::getline(ss, ret.adminID, '|');
 
 	ret.passwordHash = std::stoull(hashStr);
 	return ret;
