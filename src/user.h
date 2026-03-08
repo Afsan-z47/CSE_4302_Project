@@ -1,6 +1,7 @@
 #ifndef USER_H
 #define USER_H
 
+#include "file_ops.h"
 #include <cstdlib>
 #include <ctime>
 #include <functional>
@@ -50,8 +51,7 @@ public:
 	virtual ~User() {}
 };
 
-class Student : public User {
-	std::string name;
+class Student : public User, public File_ops<Student> {
 	std::string fatherName;
 	std::string motherName;
 	std::string address;
@@ -84,10 +84,21 @@ public:
 	void setPhoneNumber(const std::string &pn);
 
 	void getType() const override;
+
+	Student(const Student &other);
+	Student(Student &&other) noexcept;
+
+	// NOTE: ----- Serialise/Deserialise -----
+	// Format: ID|username|email|salt|passwordHash|fatherName|motherName|address|phoneNumber
+	std::string serialize() const;
+	Student     deserialize(std::string &line) const;
+
+	// NOTE: ----- File_ops ------
+	void    save(std::ostream &f_out) const override;
+	Student load(std::istream &f_in) override;
 };
 
-class Teacher : public User {
-	std::string name;
+class Teacher : public User, public File_ops<Teacher> {
 	int         age;
 	std::string phone_number;
 	std::string course;
@@ -112,11 +123,22 @@ public:
 	void contact() const;
 
 	void getType() const override;
+
+	Teacher(const Teacher &other);
+	Teacher(Teacher &&other) noexcept;
+
+	// NOTE: ----- Serialise/Deserialise -----
+	// Format: ID|username|email|salt|passwordHash|age|phone_number|course|salary
+	std::string serialize() const;
+	Teacher     deserialize(std::string &line) const;
+
+	// NOTE: ----- File_ops ------
+	void    save(std::ostream &f_out) const override;
+	Teacher load(std::istream &f_in) override;
 };
 
-class Admin : public User {
+class Admin : public User, public File_ops<Admin> {
 	std::string adminID;
-	std::string name;
 
 public:
 	Admin(
@@ -125,6 +147,9 @@ public:
 	    const std::string &pass,
 	    const std::string &mail
 	);
+
+	Admin(const Admin &other);
+	Admin(Admin &&other) noexcept;
 
 	std::string generatePass(const std::string &phn);
 	std::string generateSID();
@@ -148,6 +173,15 @@ public:
 	);
 
 	void getType() const override;
+
+	// NOTE: ----- Serialise/Deserialise -----
+	// Format: ID|username|email|salt|passwordHash|adminID
+	std::string serialize() const;
+	Admin       deserialize(std::string &line) const;
+
+	// NOTE: ----- File_ops ------
+	void  save(std::ostream &f_out) const override;
+	Admin load(std::istream &f_in) override;
 };
 
 #endif // USER_H
