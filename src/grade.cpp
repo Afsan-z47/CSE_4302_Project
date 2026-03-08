@@ -1,33 +1,42 @@
 #ifndef GRADE_CPP
 #define GRADE_CPP
+#include "grade.h"
 
-//TODO: [ ] - Move it to a .h file
-
-#include<iostream>
-#include "assessment.cpp"
-// #include "student.cpp"
-class Grade{
-	// Student s1;
-	 Assessment a1;
-	char grade;
-public:
-	// Grade(Student s2,Assessment a2):s1(s2),a1(a2){}
-	char calculate_grade(){
+std::string Grade::calculate_grade(){
 	double percent = a1.get_percentage();
 
-//	BUG: It can return multiple characters??
+	if(percent >= 80) {
+	grade = "A+";
+	return "A+";}
+	else if(percent >= 75) {
+	grade = "A";
+	return "A";}
+	else if(percent >= 70) {
+	grade = "A-";
+	return "A-";}
+	else if(percent >=65) {
+	grade = "B+";
+	return "B+";}
+	else if(percent >=60) {
+	grade = "B";
+	return "B";}
+	else if(percent >= 55) {
+	grade = "B-";
+	return "B-";}
+	else if(percent >= 50){ 
+	grade = "C+";
+	return "C+";}
+	else if(percent >= 45) {
+	grade = "C";
+	return "C";}
+	else if(percent >= 40) {
+	grade = "D";
+	return "D";}
+	else{grade = "F";
+	return "F";}
 
-	if(percent >= 80) return 'A+';
-	else if(percent >= 75) return 'A';
-	else if(percent >= 70) return 'A-';
-	else if(percent >=65) return 'B+';
-	else if(percent >=60) return 'B';
-	else if(percent >= 55) return 'B-';
-	else if(percent >= 50) return 'C+';
-	else if(percent >= 45) return 'C';
-	else if(percent >= 40) return 'D';
-	else return 'F';
-	}
-};
-
+}
+std::string Grade::get_grade()const{
+	return grade;
+}
 #endif // GRADE_CPP
