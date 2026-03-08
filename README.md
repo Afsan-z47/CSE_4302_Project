@@ -78,15 +78,22 @@ meson compile -C build
 ```bash
 ./build/project.o
 ```
-### Check Coding Style using Clang-tidy
+### Check Coding guidelines and Style using clang-tidy and clang-format
 
 #### Just add *tidy* at step **3**.
 
 The following command will deliver code guideline checkes
 
-
 ```bash
 meson compile -C build tidy
+```
+
+#### Use this to fix coding style
+The following command will format the code and provide change history:
+
+```bash
+clang-format -i --style=file src/*.cpp src/*.h
+git diff src/
 ```
 
 Output: 
