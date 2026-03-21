@@ -1,5 +1,15 @@
 #include "grade.h"
 
+#include "assessment.h"
+#include "user.h"
+#include <utility>
+
+Grade::Grade(Student student, Assessment assessment)
+    : a1(std::move(assessment)),
+      s1(std::move(student)) {
+	calculate_grade();
+}
+
 std::string Grade::calculate_grade() {
 	double percent = a1.get_percentage();
 
