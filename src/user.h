@@ -87,6 +87,7 @@ public:
 
 	Student(const Student &other);
 	Student(Student &&other) noexcept;
+	Student &operator=(const Student &other);
 
 	// NOTE: ----- Serialise/Deserialise -----
 	// Format: ID|username|email|salt|passwordHash|fatherName|motherName|address|phoneNumber
@@ -126,6 +127,7 @@ public:
 
 	Teacher(const Teacher &other);
 	Teacher(Teacher &&other) noexcept;
+	Teacher &operator=(const Teacher &other);
 
 	// NOTE: ----- Serialise/Deserialise -----
 	// Format: ID|username|email|salt|passwordHash|age|phone_number|course|salary
@@ -150,6 +152,7 @@ public:
 
 	Admin(const Admin &other);
 	Admin(Admin &&other) noexcept;
+	Admin &operator=(const Admin &other);
 
 	std::string generatePass(const std::string &phn);
 	std::string generateSID();

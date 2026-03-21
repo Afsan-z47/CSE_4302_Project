@@ -3,12 +3,13 @@
 
 // TODO: [ ] - Build a .h file
 
+#include "file_ops.h"
 #include "grade.cpp"
 #include "user.h"
 #include <iomanip>
 #include <iostream>
 #include <vector>
-class Course {
+class Course : public File_ops<Course> {
 	// FIX: Explicitly wrote private here. Better visibility
 private:
 	std::string courseCode;
@@ -30,8 +31,8 @@ public:
 	/*	BUG: Does not initialize instructor name like the setCourseInfo method.
 	    BUG: why initialize sid here?
 	    Course(std::string code,std::string sid){
-	        courseCode = code;
-	        studentnumber = sid;
+	    courseCode = code;
+	    studentnumber = sid;
 	    }
 
 	*/
@@ -39,6 +40,21 @@ public:
 	Course(std::string code, std::string name, std::string instructor) {
 		setCourseInfo(code, name, instructor);
 	}
+
+	// NOTE: Explicit definations of copy and move operators
+	Course(const Course &other)
+	    : courseCode(other.courseCode),
+	      courseName(other.courseName),
+	      instructorName(other.instructorName),
+	      students_(other.students_),
+	      assessment_(other.assessment_) {}
+
+	Course(Course &&other) noexcept
+	    : courseCode(std::move(other.courseCode)),
+	      courseName(std::move(other.courseName)),
+	      instructorName(std::move(other.instructorName)),
+	      students_(std::move(other.students_)),
+	      assessment_(std::move(other.assessment_)) {}
 
 	//	NOTE: ------- Setters/Adders -----------
 
@@ -70,11 +86,11 @@ public:
 		          << " | number of students: " << students_.size() << "\n";
 	}
 
-	void search_student(Assessment &assessments, Student &students, std::string id) const {
+	void search_student(Assessment &assessment, Student &student, std::string id) const {
 		for (int i = 0; i < students_.size(); i++) {
-			if (id == students.getID()) {
-				assessments = assessment_[i];
-				students    = students_[i];
+			if (id == student.getID()) {
+				assessment = assessment_[i];
+				student    = students_[i];
 				return;
 			}
 		}
@@ -97,14 +113,25 @@ public:
 		assessments.display();
 	}
 
-	//	NOTE: ----- Serialization -----
+	//	NOTE: ----- Serialization / Deserialization -----
 
 	// Format: courseCode|courseName|instructorName
-	std::string serialise() const {
+	std::string serialize() const {
 		std::stringstream ss;
 		ss << courseCode << '|' << courseName << '|' << instructorName;
 
 		return ss.str();
+	}
+
+	Course deserialize(std::string &line) const {
+		std::stringstream ss(line);
+		Course            ret;
+
+		std::getline(ss, ret.courseCode, '|');
+		std::getline(ss, ret.courseName, '|');
+		std::getline(ss, ret.instructorName);
+
+		return ret;
 	}
 };
 

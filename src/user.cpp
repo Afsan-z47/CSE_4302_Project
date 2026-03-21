@@ -105,48 +105,68 @@ void Student::setPhoneNumber(const std::string &pn) { phoneNumber = pn; }
 
 void Student::getType() const { std::cout << "User is of a student-type" << std::endl; }
 
-// ─── Teacher ─────────────────────────────────────────────────────────────────
+// ─── Student File_ops ─────────────────────────────────────────────────────────
 
-Teacher::Teacher()
-    : User(),
-      age(0),
-      salary(0) {}
+Student::Student(const Student &other)
+    : User(other),
+      fatherName(other.fatherName),
+      motherName(other.motherName),
+      address(other.address),
+      phoneNumber(other.phoneNumber) {}
 
-Teacher::Teacher(
-    const std::string &id,
-    const std::string &n,
-    int                a,
-    const std::string &p,
-    const std::string &ps,
-    int                s,
-    const std::string &mail,
-    const std::string &c
-)
-    : User(id, n, ps, mail),
-      age(a),
-      phone_number(p),
-      course(c),
-      salary(s) {}
+Student::Student(Student &&other) noexcept
+    : User(other),
+      fatherName(std::move(other.fatherName)),
+      motherName(std::move(other.motherName)),
+      address(std::move(other.address)),
+      phoneNumber(std::move(other.phoneNumber)) {}
 
-void Teacher::displayInfo() const {
-	// clang-format off
-	std::cout << "Teacher ID: " << ID           << std::endl;
-	std::cout << "Name: "       << username     << std::endl;
-	std::cout << "Age: "        << age          << std::endl;
-	std::cout << "Course: "     << course       << std::endl;
-	std::cout << "Phone: "      << phone_number << std::endl;
-	std::cout << "Salary: "     << salary       << std::endl;
-	// clang-format on
+Student &Student::operator=(const Student &other) {
+	if (this != &other) {
+		User::operator=(other);
+		fatherName  = other.fatherName;
+		motherName  = other.motherName;
+		address     = other.address;
+		phoneNumber = other.phoneNumber;
+	}
+	return *this;
 }
 
-void Teacher::setCourse(const std::string &c) { course = c; }
-void Teacher::updateSalary(int newSalary) { salary = newSalary; }
+// Format: ID|username|email|salt|passwordHash|fatherName|motherName|address|phoneNumber
+std::string Student::serialize() const {
+	std::ostringstream oss;
+	oss << ID << '|' << username << '|' << email << '|' << salt << '|' << passwordHash << '|'
+	    << fatherName << '|' << motherName << '|' << address << '|' << phoneNumber;
 
-void Teacher::contact() const {
-	std::cout << "Calling " << username << " at " << phone_number << std::endl;
+	return oss.str();
 }
 
-void Teacher::getType() const { std::cout << "User is of teacher-type" << std::endl; }
+Student Student::deserialize(std::string &line) const {
+	std::stringstream ss(line);
+	Student           ret;
+	std::string       hashStr;
+
+	std::getline(ss, ret.ID, '|');
+	std::getline(ss, ret.username, '|');
+	std::getline(ss, ret.email, '|');
+	std::getline(ss, ret.salt, '|');
+	std::getline(ss, hashStr, '|');
+	std::getline(ss, ret.fatherName, '|');
+	std::getline(ss, ret.motherName, '|');
+	std::getline(ss, ret.address, '|');
+	std::getline(ss, ret.phoneNumber, '|');
+
+	ret.passwordHash = std::stoull(hashStr);
+	return ret;
+}
+
+void Student::save(std::ostream &f_out) const { f_out << serialize(); }
+
+Student Student::load(std::istream &f_in) {
+	std::string line;
+	std::getline(f_in, line);
+	return deserialize(line);
+}
 
 // ─── Admin ───────────────────────────────────────────────────────────────────
 
@@ -215,36 +235,36 @@ std::string Admin::addTeacher(
 
 void Admin::getType() const { std::cout << "User is of admin-type" << '\n'; }
 
-// ─── Student copy/move ───────────────────────────────────────────────────────
+// ─── Admin File_ops ───────────────────────────────────────────────────────────
 
-Student::Student(const Student &other)
+Admin::Admin(const Admin &other)
     : User(other),
-      fatherName(other.fatherName),
-      motherName(other.motherName),
-      address(other.address),
-      phoneNumber(other.phoneNumber) {}
+      adminID(other.adminID) {}
 
-Student::Student(Student &&other) noexcept
+Admin::Admin(Admin &&other) noexcept
     : User(other),
-      fatherName(std::move(other.fatherName)),
-      motherName(std::move(other.motherName)),
-      address(std::move(other.address)),
-      phoneNumber(std::move(other.phoneNumber)) {}
+      adminID(std::move(other.adminID)) {}
 
-// ─── Student File_ops ─────────────────────────────────────────────────────────
+Admin &Admin::operator=(const Admin &other) {
+	if (this != &other) {
+		User::operator=(other);
+		adminID = other.adminID;
+	}
+	return *this;
+}
 
-// Format: ID|username|email|salt|passwordHash|fatherName|motherName|address|phoneNumber
-std::string Student::serialize() const {
+// Format: ID|username|email|salt|passwordHash|adminID
+std::string Admin::serialize() const {
 	std::ostringstream oss;
 	oss << ID << '|' << username << '|' << email << '|' << salt << '|' << passwordHash << '|'
-	    << fatherName << '|' << motherName << '|' << address << '|' << phoneNumber;
+	    << adminID;
 
 	return oss.str();
 }
 
-Student Student::deserialize(std::string &line) const {
+Admin Admin::deserialize(std::string &line) const {
 	std::stringstream ss(line);
-	Student           ret;
+	Admin             ret("", "", "", "");
 	std::string       hashStr;
 
 	std::getline(ss, ret.ID, '|');
@@ -252,24 +272,64 @@ Student Student::deserialize(std::string &line) const {
 	std::getline(ss, ret.email, '|');
 	std::getline(ss, ret.salt, '|');
 	std::getline(ss, hashStr, '|');
-	std::getline(ss, ret.fatherName, '|');
-	std::getline(ss, ret.motherName, '|');
-	std::getline(ss, ret.address, '|');
-	std::getline(ss, ret.phoneNumber, '|');
+	std::getline(ss, ret.adminID, '|');
 
 	ret.passwordHash = std::stoull(hashStr);
 	return ret;
 }
 
-void Student::save(std::ostream &f_out) const { f_out << serialize(); }
+void Admin::save(std::ostream &f_out) const { f_out << serialize(); }
 
-Student Student::load(std::istream &f_in) {
+Admin Admin::load(std::istream &f_in) {
 	std::string line;
 	std::getline(f_in, line);
 	return deserialize(line);
 }
 
-// ─── Teacher copy/move ───────────────────────────────────────────────────────
+// ─── Teacher ─────────────────────────────────────────────────────────────────
+
+Teacher::Teacher()
+    : User(),
+      age(0),
+      salary(0) {}
+
+Teacher::Teacher(
+    const std::string &id,
+    const std::string &n,
+    int                a,
+    const std::string &p,
+    const std::string &ps,
+    int                s,
+    const std::string &mail,
+    const std::string &c
+)
+    : User(id, n, ps, mail),
+      age(a),
+      phone_number(p),
+      course(c),
+      salary(s) {}
+
+void Teacher::displayInfo() const {
+	// clang-format off
+	std::cout << "Teacher ID: " << ID           << std::endl;
+	std::cout << "Name: "       << username     << std::endl;
+	std::cout << "Age: "        << age          << std::endl;
+	std::cout << "Course: "     << course       << std::endl;
+	std::cout << "Phone: "      << phone_number << std::endl;
+	std::cout << "Salary: "     << salary       << std::endl;
+	// clang-format on
+}
+
+void Teacher::setCourse(const std::string &c) { course = c; }
+void Teacher::updateSalary(int newSalary) { salary = newSalary; }
+
+void Teacher::contact() const {
+	std::cout << "Calling " << username << " at " << phone_number << std::endl;
+}
+
+void Teacher::getType() const { std::cout << "User is of teacher-type" << std::endl; }
+
+// ─── Teacher File_ops ─────────────────────────────────────────────────────────
 
 Teacher::Teacher(const Teacher &other)
     : User(other),
@@ -285,7 +345,16 @@ Teacher::Teacher(Teacher &&other) noexcept
       course(std::move(other.course)),
       salary(other.salary) {}
 
-// ─── Teacher File_ops ─────────────────────────────────────────────────────────
+Teacher &Teacher::operator=(const Teacher &other) {
+	if (this != &other) {
+		User::operator=(other);
+		age          = other.age;
+		phone_number = other.phone_number;
+		course       = other.course;
+		salary       = other.salary;
+	}
+	return *this;
+}
 
 // Format: ID|username|email|salt|passwordHash|age|phone_number|course|salary
 std::string Teacher::serialize() const {
@@ -320,51 +389,6 @@ Teacher Teacher::deserialize(std::string &line) const {
 void Teacher::save(std::ostream &f_out) const { f_out << serialize(); }
 
 Teacher Teacher::load(std::istream &f_in) {
-	std::string line;
-	std::getline(f_in, line);
-	return deserialize(line);
-}
-
-// ─── Admin copy/move ─────────────────────────────────────────────────────────
-
-Admin::Admin(const Admin &other)
-    : User(other),
-      adminID(other.adminID) {}
-
-Admin::Admin(Admin &&other) noexcept
-    : User(other),
-      adminID(std::move(other.adminID)) {}
-
-// ─── Admin File_ops ───────────────────────────────────────────────────────────
-
-// Format: ID|username|email|salt|passwordHash|adminID
-std::string Admin::serialize() const {
-	std::ostringstream oss;
-	oss << ID << '|' << username << '|' << email << '|' << salt << '|' << passwordHash << '|'
-	    << adminID;
-
-	return oss.str();
-}
-
-Admin Admin::deserialize(std::string &line) const {
-	std::stringstream ss(line);
-	Admin             ret("", "", "", "");
-	std::string       hashStr;
-
-	std::getline(ss, ret.ID, '|');
-	std::getline(ss, ret.username, '|');
-	std::getline(ss, ret.email, '|');
-	std::getline(ss, ret.salt, '|');
-	std::getline(ss, hashStr, '|');
-	std::getline(ss, ret.adminID, '|');
-
-	ret.passwordHash = std::stoull(hashStr);
-	return ret;
-}
-
-void Admin::save(std::ostream &f_out) const { f_out << serialize(); }
-
-Admin Admin::load(std::istream &f_in) {
 	std::string line;
 	std::getline(f_in, line);
 	return deserialize(line);
