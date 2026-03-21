@@ -1,5 +1,3 @@
-#ifndef GRADE_CPP
-#define GRADE_CPP
 #include "grade.h"
 
 std::string Grade::calculate_grade() {
@@ -38,4 +36,3 @@ std::string Grade::calculate_grade() {
 	}
 }
 std::string Grade::get_grade() const { return grade; }
-#endif // GRADE_CPP

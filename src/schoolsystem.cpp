@@ -23,9 +23,9 @@
  *   [ ] Grade/report card is stubbed pending Assessment ↔ Course linkage.
  */
 
-#include "assessment.cpp" // defines Assessment
+#include "assessment.h" // defines Assessment
 #include "course.cpp"     // defines Course (includes grade.cpp internally)
-#include "grade.cpp"      // defines Grade  (includes assessment.cpp internally)
+#include "grade.h"      // defines Grade  (includes assessment.cpp internally)
 
 #include "AttendanceRecord.h"
 #include "file_ops.h"

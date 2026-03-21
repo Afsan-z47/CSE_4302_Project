@@ -1,3 +1,6 @@
+#ifndef __ASSESSMENT__
+#define __ASSESSMENT__
+
 #include <string>
 class Assessment {
 	std::string id;
@@ -25,3 +28,5 @@ public:
 	double get_percentage() const;
 	void   display() const;
 };
+
+#endif
