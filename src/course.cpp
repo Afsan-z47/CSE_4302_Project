@@ -133,6 +133,15 @@ public:
 
 		return ret;
 	}
+
+	// NOTE: ----- File_ops ------
+	void save(std::ostream &f_out) const override { f_out << serialize(); }
+
+	Course load(std::istream &f_in) override {
+		std::string line;
+		std::getline(f_in, line);
+		return deserialize(line);
+	}
 };
 
 #endif
