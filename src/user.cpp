@@ -35,7 +35,7 @@ void User::setPassword(const std::string &pass) { passwordHash = hashPass(salt, 
 bool User::login(const std::string &uname, const std::string &pass) const {
 	try {
 		if ((uname == username) && (passwordHash == hashPass(salt, pass))) {
-			std::clog << "Login is successful" << std::endl;
+			std::cout << "Login is successful" << std::endl;
 			return true;
 		} else {
 			throw failure();

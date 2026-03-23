@@ -1,7 +1,7 @@
 #ifndef FILE_OPS_H
 #define FILE_OPS_H
 
-#include <iosfwd>
+#include <fstream>
 
 template <typename T> class File_ops {
 public:
