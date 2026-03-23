@@ -18,9 +18,10 @@ Assessment::Assessment() {
 		marks_obtained[i] = 0;
 	}
 }
-void Assessment::set_id(std::string ID) { studentID_ = std::move(ID); }
+void Assessment::set_id(const std::string &ID) { studentID_ = ID; }
+void Assessment::set_courceCode(const std::string &code) { courseCode_ = code; }
 
-void Assessment::set_quiz1(double marks) {
+void Assessment::set_quiz1(const double marks) {
 	if (marks > 15) {
 		std::cout << "Quiz marks cannot be more than 15 marks\n";
 		return;
@@ -28,14 +29,14 @@ void Assessment::set_quiz1(double marks) {
 	marks_obtained[0] = marks;
 }
 
-void Assessment::set_quiz2(double marks) {
+void Assessment::set_quiz2(const double marks) {
 	if (marks > 15) {
 		std::cout << "Quiz marks cannot be more than 15 marks\n";
 		return;
 	}
 	marks_obtained[1] = marks;
 }
-void Assessment::set_quiz3(double marks) {
+void Assessment::set_quiz3(const double marks) {
 	if (marks > 15) {
 		std::cout << "Quiz marks cannot be more than 15 marks\n";
 		return;
@@ -43,7 +44,7 @@ void Assessment::set_quiz3(double marks) {
 	marks_obtained[2] = marks;
 }
 
-void Assessment::set_quiz4(double marks) {
+void Assessment::set_quiz4(const double marks) {
 	if (marks > 15) {
 		std::cout << "Quiz marks cannot be more than 15 marks\n";
 		return;
@@ -51,7 +52,7 @@ void Assessment::set_quiz4(double marks) {
 	marks_obtained[3] = marks;
 }
 
-void Assessment::set_midterm(double marks) {
+void Assessment::set_midterm(const double marks) {
 	if (marks > 120) {
 		std::cout << "Midterm marks cannot be greater than 120\n";
 		return;
@@ -59,7 +60,7 @@ void Assessment::set_midterm(double marks) {
 	marks_obtained[4] = marks;
 }
 
-void Assessment::set_final(double marks) {
+void Assessment::set_final(const double marks) {
 	if (marks > 120) {
 		std::cout << "Final marks cannot be greater than 120\n";
 		return;

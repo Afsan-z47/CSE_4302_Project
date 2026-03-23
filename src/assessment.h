@@ -13,19 +13,22 @@ class Assessment {
 	// first 4 are quiz marks(out of 15) and the next 2 are midterm and final marks respectfully
 public:
 	Assessment();
-	void   set_id(std::string ID);
-	void   set_quiz1(double marks);
-	void   set_quiz2(double marks);
-	void   set_quiz3(double marks);
-	void   set_quiz4(double marks);
-	void   set_midterm(double marks);
-	void   set_final(double marks);
-	double get_quiz1() const;
-	double get_quiz2() const;
-	double get_quiz3() const;
-	double get_quiz4() const;
-	double get_midterm() const;
-	double get_final() const;
+	void        set_id(const std::string &ID);
+	void        set_courceCode(const std::string &code);
+	void        set_quiz1(const double marks);
+	void        set_quiz2(const double marks);
+	void        set_quiz3(const double marks);
+	void        set_quiz4(const double marks);
+	void        set_midterm(const double marks);
+	void        set_final(const double marks);
+	std::string getStudentID() const;
+	std::string getCourseCode() const;
+	double      get_quiz1() const;
+	double      get_quiz2() const;
+	double      get_quiz3() const;
+	double      get_quiz4() const;
+	double      get_midterm() const;
+	double      get_final() const;
 
 	void   set_all_marks_together(double m[6]);
 	double get_percentage() const;
@@ -36,10 +39,8 @@ public:
 
 	Assessment deserialize(std::string &line);
 
-	void        save(std::ostream &f_out) const;
-	Assessment  load(std::istream &f_in);
-	std::string getStudentID() const;
-	std::string getCourseCode() const;
+	void       save(std::ostream &f_out) const;
+	Assessment load(std::istream &f_in);
 };
 
 #endif
