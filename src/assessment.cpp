@@ -4,6 +4,7 @@
 #include "assessment.h"
 #include <iomanip>
 #include <iostream>
+#include <string>
 Assessment::Assessment() {
 	for (int i = 0; i < 6; i++) {
 		if (i < 4) {
@@ -20,7 +21,7 @@ void Assessment::set_id(std::string ID) { id = ID; }
 
 void Assessment::set_quiz1(double marks) {
 	if (marks > 15) {
-		std::cout << "Quiz marks cannot be more than 15 marks for this design\n";
+		std::cout << "Quiz marks cannot be more than 15 marks\n";
 		return;
 	}
 	marks_obtained[0] = marks;
@@ -28,14 +29,14 @@ void Assessment::set_quiz1(double marks) {
 
 void Assessment::set_quiz2(double marks) {
 	if (marks > 15) {
-		std::cout << "Quiz marks cannot be more than 15 marks for this design\n";
+		std::cout << "Quiz marks cannot be more than 15 marks\n";
 		return;
 	}
 	marks_obtained[1] = marks;
 }
 void Assessment::set_quiz3(double marks) {
 	if (marks > 15) {
-		std::cout << "Quiz marks cannot be more than 15 marks for this design\n";
+		std::cout << "Quiz marks cannot be more than 15 marks\n";
 		return;
 	}
 	marks_obtained[2] = marks;
@@ -43,7 +44,7 @@ void Assessment::set_quiz3(double marks) {
 
 void Assessment::set_quiz4(double marks) {
 	if (marks > 15) {
-		std::cout << "Quiz marks cannot be more than 15 marks for this design\n";
+		std::cout << "Quiz marks cannot be more than 15 marks\n";
 		return;
 	}
 	marks_obtained[3] = marks;
@@ -73,9 +74,9 @@ double Assessment::get_quiz3() const { return marks_obtained[2]; }
 
 double Assessment::get_quiz4() const { return marks_obtained[3]; }
 
-double Assessment::get_midterm(double marks) { return marks_obtained[4]; }
+double Assessment::get_midterm() const { return marks_obtained[4]; }
 
-double Assessment::get_final() { return marks_obtained[5]; }
+double Assessment::get_final() const { return marks_obtained[5]; }
 
 void Assessment::set_all_marks_together(double m[6]) {
 	if (m[0] > 15 || m[1] > 15 || m[2] > 15 || m[3] > 15 || m[4] > 120 || m[5] > 120) {
@@ -128,4 +129,44 @@ void Assessment::display() const {
 
 	std::cout << std::setfill('-') << std::setw(40) << "" << '\n';
 	std::cout << std::setfill(' ');
+}
+
+// Format: studentID|q1|q2|q3|q4|mid|fin
+std::string Assessment::serialize() const {
+	std::ostringstream ss;
+	ss << id << '|' << get_quiz1() << '|' << get_quiz2() << '|' << get_quiz3() << '|' << get_quiz4()
+	   << '|' << get_midterm() << '|' << get_final();
+	return ss.str();
+}
+
+Assessment Assessment::deserialize(std::string &line) {
+	std::stringstream ss(line);
+	std::string       id, q1, q2, q3, q4, mid, fin;
+	std::getline(ss, id, '|');
+	std::getline(ss, q1, '|');
+	std::getline(ss, q2, '|');
+	std::getline(ss, q3, '|');
+	std::getline(ss, q4, '|');
+	std::getline(ss, mid, '|');
+	std::getline(ss, fin);
+	double m[6] = {
+	    std::stod(q1),
+	    std::stod(q2),
+	    std::stod(q3),
+	    std::stod(q4),
+	    std::stod(mid),
+	    std::stod(fin)
+	};
+	Assessment ret;
+	ret.set_id(id);
+	ret.set_all_marks_together(m);
+	return ret;
+}
+
+void Assessment::save(std::ostream &f_out) const { f_out << serialize(); }
+
+Assessment Assessment::load(std::istream &f_in) {
+	std::string line;
+	std::getline(f_in, line);
+	return deserialize(line);
 }
