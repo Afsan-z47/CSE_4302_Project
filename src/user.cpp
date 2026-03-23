@@ -170,6 +170,7 @@ Student Student::load(std::istream &f_in) {
 
 // ─── Admin ───────────────────────────────────────────────────────────────────
 
+Admin::Admin() = default;
 Admin::Admin(
     const std::string &id,
     const std::string &uname,

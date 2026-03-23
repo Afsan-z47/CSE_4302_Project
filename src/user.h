@@ -143,6 +143,7 @@ class Admin : public User, public File_ops<Admin> {
 	std::string adminID;
 
 public:
+	Admin();
 	Admin(
 	    const std::string &id,
 	    const std::string &uname,
