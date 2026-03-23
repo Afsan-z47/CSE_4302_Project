@@ -16,6 +16,10 @@ public:
 	AttendanceRecord() = default;
 	AttendanceRecord(std::string sID, std::string cCode, std::string d, bool status);
 
+	AttendanceRecord(const AttendanceRecord &other);
+
+	AttendanceRecord(AttendanceRecord &&other) noexcept;
+
 	void displayAttendance() const;
 	// NOTE: ----- Getters ------
 	// id check  korar jonno(jate report card e subidha hoy)

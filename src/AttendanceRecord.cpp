@@ -10,11 +10,26 @@ AttendanceRecord::AttendanceRecord(std::string sID, std::string cCode, std::stri
       isPresent(status) {}
 
 void AttendanceRecord::displayAttendance() const {
-	std::cout << "Date: " << date << std::endl;
-	std ::cout << "Course: " << courseCode << std::endl;
-	std::cout << "Student ID: " << studentID << std::endl;
-	std ::cout << "Status: " << (isPresent ? "Present" : "Absent") << std::endl;
+	std::cout << "Date: " << date << '\n';
+	std ::cout << "Course: " << courseCode << '\n';
+	std::cout << "Student ID: " << studentID << '\n';
+	std ::cout << "Status: " << (isPresent ? "Present" : "Absent") << '\n';
 }
+
+// NOTE: Explicit definations of copy and move operators
+AttendanceRecord::AttendanceRecord(const AttendanceRecord &other)
+	    : studentID(other.studentID),
+	      courseCode(other.courseCode),
+	      date(other.date),
+	      isPresent(other.isPresent)
+	      {}
+
+AttendanceRecord::AttendanceRecord(AttendanceRecord &&other) noexcept
+	    : studentID(std::move(other.studentID)),
+	      courseCode(std::move(other.courseCode)),
+	      date(std::move(other.date)),
+	      isPresent(other.isPresent)
+	      {}
 
 // NOTE: ----- Serialise/Deserialise -----
 //  Format: studentID|courseCode|date|isPresent(0/1)
