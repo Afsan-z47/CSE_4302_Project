@@ -357,7 +357,7 @@ private:
 			std::cout << "  No courses enrolled.\n";
 	}
 
-	void view_my_profile(const Student& current_user) {
+	void view_my_profile(const Student &current_user) {
 		print_title("My Profile");
 		std::cout << "  ID      : " << current_user.getID() << '\n';
 		std::cout << "  name    : " << current_user.getName() << '\n';
@@ -405,5 +405,50 @@ private:
 		}
 	}
 
-public:;
+	// NOTE: Teacher Menu
+	
+	void teacher_menu() {
+		Teacher *obj = find_data<Teacher>(sessionID_);
+		if (!me) {
+			logout();
+			return;
+		}
+
+		Teacher &current_user = *obj;
+
+		print_title("Teacher Panel");
+		std::cout << "  Welcome, " << current_user.getUsername()
+		          << "  |  ID: " << current_user.getID() << "\n\n";
+		std::cout << "  [1]  My courses\n";
+		std::cout << "  [2]  Enrolled students\n";
+		std::cout << "  [3]  Mark attendance\n";
+		std::cout << "  [4]  Enter marks\n";
+		std::cout << "  [5]  My info\n";
+		std::cout << "  [0]  Logout\n\n";
+
+		switch (read_choice(0, 5)) {
+		case 0:
+			logout();
+			break;
+		case 1:
+	//		view_teacher_courses(current_user);
+			break;
+		case 2:
+	//		view_enrolled_students(current_user);
+			break;
+		case 3:
+	//		mark_attendance(current_user);
+			break;
+		case 4:
+	//		enter_marks(current_user);
+			break;
+		case 5:
+			print_title("My Info");
+			current_user.displayInfo();
+			break;
+		}
+	}
+
+public:
+	;
 };
