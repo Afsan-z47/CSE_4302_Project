@@ -1,3 +1,6 @@
+#ifndef __GRADE__
+#define __GRADE__
+
 #include "assessment.h"
 #include "user.h"
 #include <string>
@@ -11,3 +14,5 @@ public:
 	std::string calculate_grade();
 	std::string get_grade() const;
 };
+
+#endif

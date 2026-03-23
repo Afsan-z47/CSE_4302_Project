@@ -25,7 +25,7 @@ std::string AttendanceRecord::serialize() const {
 	return ss.str();
 }
 
-AttendanceRecord desirialize(std::string &line) {
+AttendanceRecord AttendanceRecord::desirialize(std::string &line) const {
 	std::stringstream ss(line);
 
 	std::string studentID;
@@ -48,6 +48,6 @@ void AttendanceRecord::save(std::ostream &f_out) const { f_out << serialize(); }
 
 AttendanceRecord AttendanceRecord::load(std::istream &f_in) {
 	std::string line;
-	f_in >> line;
+	std::getline(f_in, line);
 	return desirialize(line);
 }

@@ -1,6 +1,3 @@
-#ifndef ASSESSMENT_CPP
-#define ASSESSMENT_CPP
-
 // TODO: [ ] - Move it to a .h file
 //  	[ ] - Make the code cleaner and easier to read
 
@@ -132,5 +129,3 @@ void Assessment::display() const {
 	std::cout << std::setfill('-') << std::setw(40) << "" << '\n';
 	std::cout << std::setfill(' ');
 }
-
-#endif // ASSESSMENT_CPP
