@@ -13,18 +13,18 @@
 ----------------------
 
 - Md. Azizul Hakim Khan
-	- [ ] User
-	- [ ] Student
-	- [ ] Teacher
-	- [ ] Admin
+	- [x] User
+	- [x] Student
+	- [x] Teacher
+	- [x] Admin
 
 - Aahil Zaman
-  	- [ ] Course
-  	- [ ] Grade
-  	- [ ] Assessment
+  	- [x] Course
+  	- [x] Grade
+  	- [x] Assessment
 
 - Sami Rahman
-    - [ ] AttendanceRecord
+    - [x] AttendanceRecord
 
 - Najmus Sakib
 	- [ ] SchoolSystem
