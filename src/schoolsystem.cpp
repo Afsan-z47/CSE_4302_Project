@@ -151,6 +151,7 @@ private:
 	// NOTE: TUI Helpers
 
 	int read_choice(const int low, const int high) {
+
 		int choice = 0;
 		while (true) {
 			std::cin >> choice;
@@ -166,6 +167,7 @@ private:
 	}
 
 	void print_title(const std::string &title) {
+
 		print_line('=');
 		int pad = std::max(0, (LINE_WIDTH - (int)title.size()) / 2);
 		std::cout << std::string(pad, ' ') << title << '\n';
@@ -175,62 +177,79 @@ private:
 
 	// NOTE: Helper Functions
 
+	static std::string currentDate() {
+
+		std::time_t current_time = std::time(nullptr);
+		char        buffer[11];
+
+		std::strftime(buffer, sizeof(buffer), "%Y-%m-%d", std::localtime(&current_time));
+
+		std::string ret(buffer);
+		return ret;
+	}
+
 	// FIX: THIS find impletation is too complex and bugprone
 	// The Concept is declared as DATA_VECTOR
-	template <DATA_VECTOR T> std::vector<T> &getVec() {
-		if constexpr (std::same_as<T, Student>)
+	template <DATA_VECTOR T> std::vector<T> &get_vec() {
+
+		if constexpr (std::same_as<T, Student>) {
 			return students_;
-		else if constexpr (std::same_as<T, Teacher>)
+		} else if constexpr (std::same_as<T, Teacher>) {
 			return teachers_;
-		else if constexpr (std::same_as<T, Admin>)
+		} else if constexpr (std::same_as<T, Admin>) {
 			return admins_;
-		else if constexpr (std::same_as<T, Course>)
+		} else if constexpr (std::same_as<T, Course>) {
 			return courses_;
-		else if constexpr (std::same_as<T, AttendanceRecord>)
+		} else if constexpr (std::same_as<T, AttendanceRecord>) {
 			return attendance_;
-		else
+		} else {
 			return assessments_;
+		}
 	}
 
 	template <DATA_VECTOR T> static consteval auto get_projection() {
 
-		if constexpr (std::same_as<T, Course>)
+		if constexpr (std::same_as<T, Course>) {
 			return &Course::getCourseCode;
 
-		else if constexpr (std::same_as<T, AttendanceRecord>) {
+		} else if constexpr (std::same_as<T, AttendanceRecord>) {
 
 			// NOTE: [ capture ] ( parameters ) -> return_type { body }
 			return [](const T &item) {
 				return std::make_tuple(item.getStudentID(), item.getCourseCode());
 			};
+
 		} else if constexpr (std::same_as<T, Assessment>) {
 
-			return [](const T &item) { return std::make_tuple(item.studentID, item.courseCode); };
-		} else
+			return [](const T &item) {
+				return std::make_tuple(item.getStudentID(), item.getCourseCode());
+			};
+
+		} else {
 			return &T::getID;
+		}
 	}
 
 	template <DATA_VECTOR T>
 	    requires(!std::same_as<T, AttendanceRecord> && !std::same_as<T, Assessment>)
 	T *find_data(const std::string &key) {
+		auto &vec = get_vec<T>();
 
-		auto &vec = getVec<T>();
+		auto item = std::ranges::find(vec, key, get_projection<T>());
 
-		auto it = std::ranges::find(vec.begin(), vec.end(), key, get_projection<T>());
-
-		return (it != vec.end()) ? &(*it) : nullptr;
+		return (item != vec.end()) ? &(*item) : nullptr;
 	}
 
 	template <DATA_VECTOR T>
 	    requires(std::same_as<T, Assessment> || std::same_as<T, AttendanceRecord>)
-	T *find_data(const std::string &sid, const std::string &code) {
+	T *find_data(const std::string &id, const std::string &code) {
+		auto &vec = get_vec<T>();
 
-		auto &vec = getVec<T>();
+		auto item = std::ranges::find(vec, std::make_tuple(id, code), get_projection<T>());
 
-		auto it = std::ranges::find_if(vec.begin(), vec.end(), get_projection<T>());
-
-		return (it != vec.end()) ? &(*it) : nullptr;
+		return (item != vec.end()) ? &(*item) : nullptr;
 	}
+
 	// FIX: THIS find impletation is too complex and messy
 
 	// NOTE: GUEST Menu
@@ -270,13 +289,15 @@ private:
 		bool any_enrollments = false;
 		for (const auto &[code, sid] : enrollments_) {
 
-			if (sid != current_user.getID())
+			if (sid != current_user.getID()) {
 				continue;
+}
 			any_enrollments = true;
 
 			Course *obj = find_data<Course>(code);
-			if (obj == nullptr)
+			if (obj == nullptr) {
 				continue;
+}
 
 			Course &user_course = *obj;
 
@@ -284,8 +305,9 @@ private:
 			          << user_course.getCourseName() << user_course.getInstructorName() << '\n';
 		}
 
-		if (!any_enrollments)
+		if (!any_enrollments) {
 			std::cout << "  No courses enrolled.\n";
+}
 	}
 
 	void view_my_attendance(const Student &current_user) {
@@ -300,14 +322,16 @@ private:
 
 		for (const auto &item : attendance_) {
 
-			if (item.getStudentID() != current_user.getID())
+			if (item.getStudentID() != current_user.getID()) {
 				continue;
+}
 
 			std::cout << std::left << std::setw(14) << item.getDate() << std::setw(12)
 			          << item.getCourseCode() << (item.getStatus() ? "Present" : "Absent") << '\n';
 			total++;
-			if (item.getStatus())
+			if (item.getStatus()) {
 				present++;
+}
 		}
 
 		if (total == 0) {
@@ -332,8 +356,9 @@ private:
 
 		bool any_enrollments = false;
 		for (const auto &[code, sid] : enrollments_) {
-			if (sid != current_user.getID())
+			if (sid != current_user.getID()) {
 				continue;
+}
 			any_enrollments = true;
 
 			Assessment *obj = find_data<Assessment>(current_user.getID(), code);
@@ -353,8 +378,9 @@ private:
 			          << user_grade.get_grade() << '\n';
 		}
 
-		if (!any_enrollments)
+		if (!any_enrollments) {
 			std::cout << "  No courses enrolled.\n";
+}
 	}
 
 	void view_my_profile(const Student &current_user) {

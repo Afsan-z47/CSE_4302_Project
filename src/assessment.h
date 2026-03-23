@@ -5,7 +5,8 @@
 #include <string>
 
 class Assessment {
-	std::string id;
+	std::string studentID_;
+	std::string courseCode_;
 	double      maxMarks[6];
 	double      weightage[6]; // BUG: Redundent?
 	double      marks_obtained[6];
@@ -35,8 +36,10 @@ public:
 
 	Assessment deserialize(std::string &line);
 
-	void       save(std::ostream &f_out) const;
-	Assessment load(std::istream &f_in);
+	void        save(std::ostream &f_out) const;
+	Assessment  load(std::istream &f_in);
+	std::string getStudentID() const;
+	std::string getCourseCode() const;
 };
 
 #endif

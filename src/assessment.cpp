@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <iostream>
 #include <string>
+#include <utility>
 Assessment::Assessment() {
 	for (int i = 0; i < 6; i++) {
 		if (i < 4) {
@@ -17,7 +18,7 @@ Assessment::Assessment() {
 		marks_obtained[i] = 0;
 	}
 }
-void Assessment::set_id(std::string ID) { id = ID; }
+void Assessment::set_id(std::string ID) { studentID_ = std::move(ID); }
 
 void Assessment::set_quiz1(double marks) {
 	if (marks > 15) {
@@ -101,6 +102,9 @@ double Assessment::get_percentage() const {
 	return sum;
 }
 
+std::string Assessment::getStudentID() const { return studentID_; }
+std::string Assessment::getCourseCode() const { return courseCode_; }
+
 void Assessment::display() const {
 
 	std::cout << "\n";
@@ -134,8 +138,8 @@ void Assessment::display() const {
 // Format: studentID|q1|q2|q3|q4|mid|fin
 std::string Assessment::serialize() const {
 	std::ostringstream ss;
-	ss << id << '|' << get_quiz1() << '|' << get_quiz2() << '|' << get_quiz3() << '|' << get_quiz4()
-	   << '|' << get_midterm() << '|' << get_final();
+	ss << studentID_ << '|' << get_quiz1() << '|' << get_quiz2() << '|' << get_quiz3() << '|'
+	   << get_quiz4() << '|' << get_midterm() << '|' << get_final();
 	return ss.str();
 }
 
