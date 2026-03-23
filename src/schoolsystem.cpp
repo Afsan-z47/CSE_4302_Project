@@ -7,6 +7,7 @@
 #include <cassert>
 #include <concepts>
 #include <cstdint>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -175,9 +176,25 @@ private:
 		std::cout << '\n';
 	}
 
+	static std::string read_line(const std::string &prompt) {
+		std::string s;
+		std::cout << "  " << prompt;
+		std::getline(std::cin, s);
+		return s;
+	}
+
+	static double read_double(const std::string &prompt) {
+		double v = 0.0;
+		std::cout << "  " << prompt;
+		std::cin >> v;
+		// using getline after this causes problem
+		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		return v;
+	}
+
 	// NOTE: Helper Functions
 
-	static std::string currentDate() {
+	static std::string current_date() {
 
 		std::time_t current_time = std::time(nullptr);
 		char        buffer[11];
@@ -262,14 +279,9 @@ private:
 			return false;
 
 		print_title("Login");
-		std::string uname;
-		std::cout << "Username : ";
-		std::getline(std::cin, uname);
-
-		std::string pass;
-		std::cout << "Password : ";
-		std::getline(std::cin, pass);
-
+		std::string uname = read_line("Username : ");
+		std::string pass  = read_line("Password : ");
+		;
 		if (login(uname, pass))
 			std::cout << "\n  Login successful.\n";
 		else
@@ -291,13 +303,13 @@ private:
 
 			if (sid != current_user.getID()) {
 				continue;
-}
+			}
 			any_enrollments = true;
 
-			Course *obj = find_data<Course>(code);
+			auto *obj = find_data<Course>(code);
 			if (obj == nullptr) {
 				continue;
-}
+			}
 
 			Course &user_course = *obj;
 
@@ -307,7 +319,7 @@ private:
 
 		if (!any_enrollments) {
 			std::cout << "  No courses enrolled.\n";
-}
+		}
 	}
 
 	void view_my_attendance(const Student &current_user) {
@@ -324,14 +336,14 @@ private:
 
 			if (item.getStudentID() != current_user.getID()) {
 				continue;
-}
+			}
 
 			std::cout << std::left << std::setw(14) << item.getDate() << std::setw(12)
 			          << item.getCourseCode() << (item.getStatus() ? "Present" : "Absent") << '\n';
 			total++;
 			if (item.getStatus()) {
 				present++;
-}
+			}
 		}
 
 		if (total == 0) {
@@ -358,10 +370,10 @@ private:
 		for (const auto &[code, sid] : enrollments_) {
 			if (sid != current_user.getID()) {
 				continue;
-}
+			}
 			any_enrollments = true;
 
-			Assessment *obj = find_data<Assessment>(current_user.getID(), code);
+			auto *obj = find_data<Assessment>(current_user.getID(), code);
 			if (obj == nullptr) {
 				std::cout << std::left << std::setw(12) << code << "(no marks entered yet)\n";
 			};
@@ -380,7 +392,7 @@ private:
 
 		if (!any_enrollments) {
 			std::cout << "  No courses enrolled.\n";
-}
+		}
 	}
 
 	void view_my_profile(const Student &current_user) {
@@ -395,7 +407,7 @@ private:
 	}
 
 	void student_menu() {
-		Student *obj = find_data<Student>(sessionID_);
+		auto *obj = find_data<Student>(sessionID_);
 		if (obj == nullptr) {
 			logout();
 			return;
@@ -432,10 +444,204 @@ private:
 	}
 
 	// NOTE: Teacher Menu
-	
+
+	std::vector<Course> courses_by_teacher(const Teacher &current_user) {
+		std::vector<Course> out;
+
+		for (auto &item : courses_) {
+			if (item.getInstructorName() == current_user.getUsername()) {
+				out.push_back(item);
+			}
+		}
+
+		return out;
+	}
+
+	void view_teacher_courses(const Teacher &current_user) {
+		print_title("My Courses");
+
+		auto teaches_courses = courses_by_teacher(current_user);
+
+		if (teaches_courses.empty()) {
+			std::cout << "  No courses assigned.\n";
+		} else {
+			for (auto &item : teaches_courses) {
+				item.displayCourseInfo();
+			}
+		}
+	}
+
+	void view_enrolled_students(const Teacher &current_user) {
+		print_title("Enrolled Students");
+
+		auto teaches_courses = courses_by_teacher(current_user);
+		if (teaches_courses.empty()) {
+			std::cout << "  No courses assigned.\n";
+			return;
+		}
+
+		for (auto &item : teaches_courses) {
+			std::cout << "\n  " << item.getCourseCode() << "  –  " << item.getCourseName() << '\n';
+			print_line('-');
+
+			bool any_enrollment = false;
+			for (const auto &[code, id] : enrollments_) {
+				if (code != item.getCourseCode()) {
+					continue;
+				}
+				any_enrollment = true;
+
+				auto *student = find_data<Student>(id);
+
+				if (student == nullptr) {
+					std::cout << "  " << std::setw(14) << id << "(unknown)" << '\n';
+				} else {
+					std::cout << "  " << std::setw(14) << id << student->getName() << '\n';
+				}
+			}
+
+			if (!any_enrollment) {
+				std::cout << "  (no students enrolled)\n";
+			}
+		}
+	}
+
+	void mark_attendance(const Teacher &current_user) {
+		print_title("Mark Attendance");
+		auto teaches_courses = courses_by_teacher(current_user);
+		if (teaches_courses.empty()) {
+			std::cout << "  No courses assigned.\n";
+			return;
+		}
+
+		for (std::size_t i = 0; i < teaches_courses.size(); i++) {
+			std::cout << "  [" << i + 1 << "]  " << teaches_courses[i].getCourseCode() << " – "
+			          << teaches_courses[i].getCourseName() << '\n';
+		}
+		std::cout << "  [0]  Back\n\n";
+		int choice = read_choice(0, (int)teaches_courses.size());
+		if (choice == 0) {
+			return;
+		}
+		Course &course = teaches_courses[choice - 1];
+
+		std::string date = current_date();
+		std::cout << "\n  Course: " << course.getCourseCode() << "  |  Date: " << date << "\n\n";
+
+		bool any_marked = false;
+		for (const auto &[code, id] : enrollments_) {
+			if (code != course.getCourseCode()) {
+				continue;
+			}
+			any_marked = true;
+
+			bool done = false;
+			for (const auto &item : attendance_) {
+				if (item.getStudentID() == id && item.getCourseCode() == code &&
+				    item.getDate() == date) {
+					done = true;
+					break;
+				}
+			}
+			if (done) {
+				std::cout << "  " << id << "  already marked today\n";
+				continue;
+			}
+
+			auto *student = find_data<Student>(id);
+
+			std::cout << "  " << std::setw(14) << id << std::setw(22)
+			          << ((student != nullptr) ? student->getName() : "?")
+			          << "Present? [1=Yes / 0=No]: ";
+
+			int choice = -1;
+			while (choice != 0 && choice != 1) {
+				std::cin >> choice;
+			}
+
+			attendance_.emplace_back(id, code, date, (choice == 1));
+		}
+
+		if (any_marked) {
+			std::cout << "\n  Attendance saved.\n";
+		} else {
+			std::cout << "\n  Nothing to mark.\n";
+		}
+	}
+
+	void enter_marks(const Teacher &current_user) {
+		print_title("Enter Marks");
+		auto teaches_courses = courses_by_teacher(current_user);
+		if (teaches_courses.empty()) {
+			std::cout << "  No courses assigned.\n";
+			return;
+		}
+
+		for (std::size_t i = 0; i < teaches_courses.size(); i++) {
+			std::cout << "  [" << i + 1 << "]  " << teaches_courses[i].getCourseCode() << " – "
+			          << teaches_courses[i].getCourseName() << '\n';
+		}
+		std::cout << "  [0]  Back\n\n";
+
+		int choice = read_choice(0, (int)teaches_courses.size());
+		if (choice == 0) {
+			return;
+		}
+
+		Course &course = teaches_courses[choice - 1];
+
+		bool any_entered = false;
+		for (const auto &[code, sid] : enrollments_) {
+
+			if (code != course.getCourseCode()) {
+				continue;
+			}
+			any_entered = true;
+
+			auto *student = find_data<Student>(sid);
+			if (student == nullptr) {
+				continue;
+			}
+
+			std::cout << "\n  Student: " << sid << "  " << student->getName() << '\n';
+			std::cout << "  (enter -1 for Quiz 1 to skip)\n";
+
+			double q1 = read_double("  Quiz 1  (0-15)  : ");
+			if (q1 < 0) {
+				continue;
+			}
+			double q2  = read_double("  Quiz 2  (0-15)  : ");
+			double q3  = read_double("  Quiz 3  (0-15)  : ");
+			double q4  = read_double("  Quiz 4  (0-15)  : ");
+			double mid = read_double("  Midterm (0-120) : ");
+			double fin = read_double("  Final   (0-120) : ");
+
+			auto      *obj = find_data<Assessment>(sid, code);
+			Assessment assessment;
+			if (obj == nullptr) {
+				Assessment temp;
+				temp.set_id(sid);
+				temp.set_courceCode(code);
+				assessments_.push_back(temp);
+				assessment = assessments_.back();
+			}
+
+			double m[6] = {q1, q2, q3, q4, mid, fin};
+			assessment.set_all_marks_together(m);
+
+			Grade grade(*student, assessment);
+			std::cout << "  → " << grade.get_grade() << "  (" << std::fixed << std::setprecision(1)
+			          << assessment.get_percentage() << "%)\n";
+		}
+
+		if (any_entered) {
+			std::cout << "\n  Marks saved.\n";
+		}
+	}
+
 	void teacher_menu() {
-		Teacher *obj = find_data<Teacher>(sessionID_);
-		if (!me) {
+		auto *obj = find_data<Teacher>(sessionID_);
+		if (obj == nullptr) {
 			logout();
 			return;
 		}
@@ -457,16 +663,16 @@ private:
 			logout();
 			break;
 		case 1:
-	//		view_teacher_courses(current_user);
+			view_teacher_courses(current_user);
 			break;
 		case 2:
-	//		view_enrolled_students(current_user);
+			view_enrolled_students(current_user);
 			break;
 		case 3:
-	//		mark_attendance(current_user);
+			mark_attendance(current_user);
 			break;
 		case 4:
-	//		enter_marks(current_user);
+			enter_marks(current_user);
 			break;
 		case 5:
 			print_title("My Info");
