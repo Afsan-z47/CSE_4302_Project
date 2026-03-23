@@ -65,18 +65,24 @@ private:
 
 	// NOTE: DATA Vectors
 	// TODO: [ ] Change this to shared memory?
-	std::vector<Student>          students_;
-	std::vector<Teacher>          teachers_;
-	std::vector<Admin>            admins_;
-	std::vector<Course>           courses_;
+	std::vector<Student> students_;
+	std::vector<Teacher> teachers_;
+	std::vector<Admin>   admins_;
+	std::vector<Course>  courses_;
+
+	std::vector<std::pair<std::string, std::string>> enrollments_;
+
 	std::vector<AttendanceRecord> attendance_;
 	std::vector<Assessment>       assessments_;
 
 	// NOTE: File paths
-	static constexpr const char *F_STUDENTS    = "students.txt";
-	static constexpr const char *F_TEACHERS    = "teachers.txt";
-	static constexpr const char *F_ADMINS      = "admins.txt";
-	static constexpr const char *F_COURSES     = "courses.txt";
+	static constexpr const char *F_STUDENTS = "students.txt";
+	static constexpr const char *F_TEACHERS = "teachers.txt";
+	static constexpr const char *F_ADMINS   = "admins.txt";
+	static constexpr const char *F_COURSES  = "courses.txt";
+
+	static constexpr const char *F_ENROLLMENTS = "enrollments.txt";
+
 	static constexpr const char *F_ATTEND      = "attendance.txt";
 	static constexpr const char *F_ASSESSMENTS = "assessments.txt";
 
@@ -229,7 +235,7 @@ private:
 
 	// NOTE: GUEST Menu
 
-	bool guestMenu() {
+	bool guest_menu() {
 		print_title("SCHOOL MANAGEMENT SYSTEM");
 		std::cout << "  [1]  Login\n";
 		std::cout << "  [0]  Exit\n\n";
