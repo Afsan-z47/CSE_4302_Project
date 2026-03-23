@@ -10,6 +10,39 @@
 #include <string>
 #include <vector>
 
+// Data model
+// ──────────
+//
+//  ┌─────────────────────────┐       ┌──────────────────────────────┐
+//  │ Student                 │       │ Course                       │
+//  │ ID, name, contact info  │       │ code, name, instructor name  │
+//  └────────────┬────────────┘       └──────────────┬───────────────┘
+//               │  1                            N   │
+//               └──────────────┬────────────────────┘
+//                              │
+//                    ┌─────────▼──────────┐
+//                    │ Enrollment         │  ← explicit join table
+//                    │ studentID          │    one student, many courses
+//                    │ courseCode         │    one course, many students
+//                    └────────┬───────────┘
+//                             │
+//             ┌───────────────┴────────────────┐
+//             │                                │
+//   ┌─────────▼──────────┐        ┌────────────▼───────────┐
+//   │ AttendanceRecord   │        │ AssessmentRecord       │
+//   │ studentID          │        │ studentID              │
+//   │ courseCode         │        │ courseCode             │
+//   │ date               │        │ q1 q2 q3 q4 mid final  │
+//   │ isPresent          │        └────────────┬───────────┘
+//   └────────────────────┘                     │
+//                                              │ + Student obj
+//                                              ▼
+//                                    ┌───────────────────┐
+//                                    │ Grade             │  ← not stored
+//                                    │ computed on demand│    Grade(Student,
+//                                    └───────────────────┘    Assessment)
+//
+
 enum Privilege_type : uint8_t {
 	GUEST   = 0,
 	STUDENT = 1,
