@@ -4,7 +4,9 @@
 #include "file_ops.h"
 #include "grade.h"
 #include "user.h"
+#include <cassert>
 #include <cstdint>
+#include <string>
 
 enum Privilege_type : uint8_t {
 	GUEST   = 0,
@@ -37,6 +39,9 @@ private:
 	static constexpr const char *F_COURSES     = "courses.txt";
 	static constexpr const char *F_ATTEND      = "attendance.txt";
 	static constexpr const char *F_ASSESSMENTS = "assessments.txt";
+
+	//NOTE: Necessary constants
+	static constexpr int LINE_WIDTH = 64;
 
 	// NOTE: FILE LOADS/SAVES
 	template <typename T> void load_records(const char *path, std::vector<T> &data_vector) {
@@ -96,6 +101,58 @@ private:
 		privilege_ = GUEST;
 		sessionID_.clear();
 	}
+	
+	//NOTE: TUI Helpers
+	
+	int read_choice(const int low, const int high) {
+		int choice = 0;
+		while(true) {
+			std::cin >> choice;
+			if(choice >= low || choice <= high) break;
+			std::cout << " Must be between " << low << " and " << high << " . Try again\n";
+		}
+		return choice;
+	}
+
+	void print_line(char type = '-', int width = 64) { std::cout << std::string(width, type) << '\n'; }
+
+	void print_title(const std::string& title) {
+		print_line('=');
+		int pad = std::max(0, (LINE_WIDTH - (int)title.size()) / 2);
+		std::cout << std::string(pad, ' ') << title << '\n';
+		print_line('=');
+		std::cout << '\n';
+	}
+
+	//NOTE: Menu
+
+	bool guestMenu() {
+		print_title("SCHOOL MANAGEMENT SYSTEM");
+		std::cout << "  [1]  Login\n";
+		std::cout << "  [0]  Exit\n\n";
+		if (read_choice(0, 1) == 0) return false;
+
+		print_title("Login");
+		std::string uname;
+		std::cout << "Username : ";
+		std::getline(std::cin, uname);
+
+
+		std::string pass;
+		std::cout << "Password : ";
+		std::getline(std::cin, pass);
+
+		if (login(uname, pass))
+			std::cout << "\n  Login successful.\n";
+		else
+			std::cout << "\n  Invalid username or password.\n";
+
+		return true;
+	}
+
+
 
 public:
+
+
 };
