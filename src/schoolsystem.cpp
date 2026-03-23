@@ -261,6 +261,113 @@ private:
 
 	// NOTE: Student Menu
 
+	void view_my_courses(const Student &current_user) {
+		print_title("My Courses");
+		std::cout << std::left << std::setw(12) << "Code" << std::setw(28) << "Name"
+		          << "Instructor\n";
+		print_line();
+
+		bool any_enrollments = false;
+		for (const auto &[code, sid] : enrollments_) {
+
+			if (sid != current_user.getID())
+				continue;
+			any_enrollments = true;
+
+			Course *obj = find_data<Course>(code);
+			if (obj == nullptr)
+				continue;
+
+			Course &user_course = *obj;
+
+			std::cout << std::left << std::setw(12) << user_course.getCourseCode() << std::setw(28)
+			          << user_course.getCourseName() << user_course.getInstructorName() << '\n';
+		}
+
+		if (!any_enrollments)
+			std::cout << "  No courses enrolled.\n";
+	}
+
+	void view_my_attendance(const Student &current_user) {
+
+		print_title("My Attendance");
+		std::cout << std::left << std::setw(14) << "Date" << std::setw(12) << "Course"
+		          << "Status\n";
+		print_line();
+
+		int present = 0;
+		int total   = 0;
+
+		for (const auto &item : attendance_) {
+
+			if (item.getStudentID() != current_user.getID())
+				continue;
+
+			std::cout << std::left << std::setw(14) << item.getDate() << std::setw(12)
+			          << item.getCourseCode() << (item.getStatus() ? "Present" : "Absent") << '\n';
+			total++;
+			if (item.getStatus())
+				present++;
+		}
+
+		if (total == 0) {
+
+			std::cout << "  No records.\n";
+
+		} else {
+
+			print_line();
+			std::cout << "  Overall: " << present << '/' << total << "  (" << std::fixed
+			          << std::setprecision(1) << 100.0 * present / total << "%)\n";
+		}
+	}
+
+	void view_my_grades(const Student &current_user) {
+
+		print_title("My Grades");
+		std::cout << std::left << std::setw(12) << "Course" << std::setw(8) << "Q1" << std::setw(8)
+		          << "Q2" << std::setw(8) << "Q3" << std::setw(8) << "Q4" << std::setw(10) << "Mid"
+		          << std::setw(10) << "Final" << std::setw(8) << "%" << "Grade\n";
+		print_line();
+
+		bool any_enrollments = false;
+		for (const auto &[code, sid] : enrollments_) {
+			if (sid != current_user.getID())
+				continue;
+			any_enrollments = true;
+
+			Assessment *obj = find_data<Assessment>(current_user.getID(), code);
+			if (obj == nullptr) {
+				std::cout << std::left << std::setw(12) << code << "(no marks entered yet)\n";
+			};
+
+			Assessment &user_assessment = *obj;
+			Grade       user_grade(current_user, user_assessment);
+			std::cout << std::left << std::setw(12) << code << std::setw(8)
+			          << user_assessment.get_quiz1() << std::setw(8) << user_assessment.get_quiz2()
+			          << std::setw(8) << user_assessment.get_quiz3() << std::setw(8)
+			          << user_assessment.get_quiz4() << std::setw(10)
+			          << user_assessment.get_midterm() << std::setw(10)
+			          << user_assessment.get_final() << std::setw(8) << std::fixed
+			          << std::setprecision(1) << user_assessment.get_percentage()
+			          << user_grade.get_grade() << '\n';
+		}
+
+		if (!any_enrollments)
+			std::cout << "  No courses enrolled.\n";
+	}
+
+	void view_my_profile(const Student& current_user) {
+		print_title("My Profile");
+		std::cout << "  ID      : " << current_user.getID() << '\n';
+		std::cout << "  name    : " << current_user.getName() << '\n';
+		std::cout << "  Father  : " << current_user.getFatherName() << '\n';
+		std::cout << "  Mother  : " << current_user.getMotherName() << '\n';
+		std::cout << "  Address : " << current_user.getAddress() << '\n';
+		std::cout << "  Phone   : " << current_user.getPhoneNumber() << '\n';
+		std::cout << "  Email   : " << current_user.getEmail() << '\n';
+	}
+
 	void student_menu() {
 		Student *obj = find_data<Student>(sessionID_);
 		if (obj == nullptr) {
@@ -271,7 +378,8 @@ private:
 		Student &current_user = *obj;
 
 		print_title("Student Panel");
-		std::cout << "  Welcome, " << me.getName() << "  |  ID: " << me.getID() << "\n\n";
+		std::cout << "  Welcome, " << current_user.getName() << "  |  ID: " << current_user.getID()
+		          << "\n\n";
 		std::cout << "  [1]  My courses\n";
 		std::cout << "  [2]  My attendance\n";
 		std::cout << "  [3]  My grades\n";
@@ -283,19 +391,19 @@ private:
 			logout();
 			break;
 		case 1:
-			//			view_my_courses(current_user);
+			view_my_courses(current_user);
 			break;
 		case 2:
-			//			view_my_attendance(current_user);
+			view_my_attendance(current_user);
 			break;
 		case 3:
-			//			view_my_grades(current_user);
+			view_my_grades(current_user);
 			break;
 		case 4:
-			//			view_my_profile(current_user);
+			view_my_profile(current_user);
 			break;
 		}
 	}
 
-public:
+public:;
 };
