@@ -18,18 +18,16 @@ void AttendanceRecord::displayAttendance() const {
 
 // NOTE: Explicit definations of copy and move operators
 AttendanceRecord::AttendanceRecord(const AttendanceRecord &other)
-	    : studentID(other.studentID),
-	      courseCode(other.courseCode),
-	      date(other.date),
-	      isPresent(other.isPresent)
-	      {}
+    : studentID(other.studentID),
+      courseCode(other.courseCode),
+      date(other.date),
+      isPresent(other.isPresent) {}
 
 AttendanceRecord::AttendanceRecord(AttendanceRecord &&other) noexcept
-	    : studentID(std::move(other.studentID)),
-	      courseCode(std::move(other.courseCode)),
-	      date(std::move(other.date)),
-	      isPresent(other.isPresent)
-	      {}
+    : studentID(std::move(other.studentID)),
+      courseCode(std::move(other.courseCode)),
+      date(std::move(other.date)),
+      isPresent(other.isPresent) {}
 
 // NOTE: ----- Serialise/Deserialise -----
 //  Format: studentID|courseCode|date|isPresent(0/1)
