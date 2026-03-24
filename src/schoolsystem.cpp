@@ -680,6 +680,35 @@ private:
 			break;
 		}
 	}
+	
+	//NOTE: Admin menu
+
+	void admin_menu() {
+		print_title("Admin Panel");
+		std::cout << "  [1]  Add student\n";
+		std::cout << "  [2]  Add teacher\n";
+		std::cout << "  [3]  Add course\n";
+		std::cout << "  [4]  Enroll student in course\n";
+		std::cout << "  [5]  List students\n";
+		std::cout << "  [6]  List teachers\n";
+		std::cout << "  [7]  List courses\n";
+		std::cout << "  [8]  Course attendance report\n";
+		std::cout << "  [0]  Logout\n\n";
+
+		switch (read_choice(0, 8)) {
+		case 0:
+			logout();
+			break;
+		/*	case 1: add_student();       break;
+		            case 2: add_teacher();       break;
+		            case 3: add_course();        break;
+		            case 4: enroll_student();    break;
+		            case 5: list_students();     break;
+		            case 6: list_teachers();     break;
+		            case 7: list_courses();      break;
+		            case 8: view_course_attendence(); break;
+		*/}
+	}
 
 public:
 	;
