@@ -64,6 +64,11 @@ brew install meson ninja
 meson setup build
 ```
 
+#### For debug version:
+```bash
+meson setup build --reconfigure -Dbuildtype=debug
+```
+
 3. **Build the project**:
 
 > [!NOTE]

@@ -1,3 +1,6 @@
 #include "schoolsystem.cpp"
 
-auto main() -> int {}
+auto main() -> int {
+	SchoolSystem system;
+	system.run();
+}

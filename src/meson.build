@@ -3,13 +3,16 @@ ncurses_dep = dependency('ncurses')
 # List all source files
 sources = files(
   'main.cpp',
+  'user.h',
   'user.cpp',
-  'course.cpp',
-  'assessment.cpp',
-  'schoolsystem.cpp',
+  'grade.h',
   'grade.cpp',
+  'assessment.h',
+  'assessment.cpp',
   'AttendanceRecord.h',
-  'RecordCard.h',
+  'AttendanceRecord.cpp',
+  'course.cpp',
+  'schoolsystem.cpp',
   'file_ops.h',
   # 'other.cpp',  # Add additional files here. Make sure previous line ends with a comma
 )
@@ -17,7 +20,7 @@ sources = files(
 core_lib = static_library('core', sources)
 
 # Build the executable
-executable('project.o', 'main.cpp', link_with: core_lib)
+executable('project.o', 'main.cpp', link_with: core_lib, cpp_args : ['-g'])
 
 # Clang-Tidy integration
 clang_tidy = find_program('clang-tidy', required: true)

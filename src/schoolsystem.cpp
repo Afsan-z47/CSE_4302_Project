@@ -65,7 +65,7 @@ private:
 	// Following a constant naming style as per
 	// cpp core guidelines ending with _ .
 	// NOTE: Session
-	Privilege_type privilege_ = GUEST;
+	Privilege_type privilege_;
 	std::string    sessionID_;
 
 	// NOTE: DATA Vectors
@@ -226,6 +226,7 @@ private:
 		std::string s;
 		std::cout << "  " << prompt;
 		std::getline(std::cin, s);
+		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 		return s;
 	}
 	static double read_int(const std::string &prompt) {
@@ -982,7 +983,10 @@ private:
 	}
 
 public:
-	SchoolSystem() {
+	SchoolSystem()
+	    : privilege_(GUEST)
+
+	{
 		load_records(F_STUDENTS, students_);
 		load_records(F_TEACHERS, teachers_);
 		load_records(F_ADMINS, admins_);
