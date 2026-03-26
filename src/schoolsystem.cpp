@@ -202,6 +202,7 @@ private:
 		int choice = 0;
 		while (true) {
 			std::cin >> choice;
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 			if (choice >= low || choice <= high)
 				break;
 			std::cout << " Must be between " << low << " and " << high << " . Try again\n";
@@ -226,9 +227,9 @@ private:
 		std::string s;
 		std::cout << "  " << prompt;
 		std::getline(std::cin, s);
-		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 		return s;
 	}
+
 	static double read_int(const std::string &prompt) {
 		int v = 0;
 		std::cout << "  " << prompt;
