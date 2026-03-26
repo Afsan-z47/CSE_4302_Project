@@ -17,8 +17,8 @@ public:
 	AttendanceRecord(std::string sID, std::string cCode, std::string d, bool status);
 
 	AttendanceRecord(const AttendanceRecord &other);
-
 	AttendanceRecord(AttendanceRecord &&other) noexcept;
+	AttendanceRecord &operator=(const AttendanceRecord &);
 
 	void displayAttendance() const;
 	// NOTE: ----- Getters ------

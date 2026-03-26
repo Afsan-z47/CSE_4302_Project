@@ -12,8 +12,8 @@ public:
 
 	/*NOTE: Preventing misuse [c++ implicitly defines these]
 	    - copy constructor
-	    - copy assignment
 	    - move constructor
+	    - copy assignment
 	    - move assignment
 	*/
 	File_ops(const File_ops &)            = delete;

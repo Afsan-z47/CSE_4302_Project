@@ -8,8 +8,11 @@
 #include <cassert>
 #include <concepts>
 #include <cstdint>
+#include <fstream>
 #include <limits>
+#include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 // Data model
@@ -93,18 +96,43 @@ private:
 
 	// NOTE: FILE LOADS/SAVES
 	template <typename T> void load_records(const char *path, std::vector<T> &data_vector) {
-		T             obj_type;
+
 		std::ifstream file_path(path);
-		if (!file_path)
+		if (!file_path) {
 			return;
+		}
 		data_vector.clear(); // needed for clean, new loads
+
+		while (file_path.peek() != EOF) {
+			T obj;
+			data_vector.push_back(obj.load(file_path));
+		}
+	}
+
+	// FIXME: Overloaded load_records for enrollment
+	void
+	load_records(const char *path, std::vector<std::pair<std::string, std::string>> &data_vector) {
+
+		std::ifstream file_path(path);
+		if (!file_path) {
+			return;
+		}
+
+		std::string code, id;
 		std::string line;
 
-		while (std::getline(file_path, line)) {
-			if (line.empty())
-				continue;
-			std::istringstream ss(line);
-			data_vector.push_back(obj_type.load(ss));
+		data_vector.clear();
+
+		while (file_path.peek() != EOF) {
+
+			std::getline(file_path, line);
+			std::stringstream ss(line);
+
+			std::getline(ss, code, '|');
+			std::getline(ss, id, '|');
+
+			std::pair<std::string, std::string> obj(code, id);
+			data_vector.push_back(obj);
 		}
 	}
 
@@ -112,6 +140,23 @@ private:
 		std::ofstream file_path(path);
 		for (const auto &item : vec) {
 			item.save(file_path);
+			file_path << '\n';
+		}
+	}
+
+	// FIXME: Overloaded save_records for enrollment
+	// FORMAT: code|id
+	void
+	save_records(const char *path, const std::vector<std::pair<std::string, std::string>> &vec) {
+
+		std::ofstream file_path(path);
+
+		for (const auto &item : vec) {
+
+			std::ostringstream oss;
+			oss << item.first << '|' << item.second;
+			file_path << oss.str();
+
 			file_path << '\n';
 		}
 	}
@@ -214,13 +259,9 @@ private:
 		return ret;
 	}
 
-	bool is_enrolled(
-	    const std::vector<std::pair<std::string, std::string>> &enrollments,
-	    const std::string                                      &code,
-	    const std::string                                      &id
-	) {
+	bool is_enrolled(const std::string &code, const std::string &id) {
 
-		for (const auto &pair : enrollments) {
+		for (const auto &pair : enrollments_) {
 			if (pair.first == code && pair.second == id) {
 				return true;
 			}
@@ -228,7 +269,12 @@ private:
 
 		return false;
 	}
-	
+
+	void seed_default_admin() {
+		if (admins_.empty()) {
+			admins_.emplace_back("ADMIN001", "admin", "admin123", "admin@school.edu");
+		}
+	}
 
 	// FIX: THIS find impletation is too complex and bugprone
 	// The Concept is declared as DATA_VECTOR
@@ -936,5 +982,46 @@ private:
 	}
 
 public:
-	;
+	SchoolSystem() {
+		load_records(F_STUDENTS, students_);
+		load_records(F_TEACHERS, teachers_);
+		load_records(F_ADMINS, admins_);
+		load_records(F_COURSES, courses_);
+		load_records(F_ATTEND, attendance_);
+		load_records(F_ASSESSMENTS, assessments_);
+		load_records(F_ENROLLMENTS, enrollments_);
+
+		seed_default_admin();
+	}
+
+	~SchoolSystem() {
+		save_records(F_STUDENTS, students_);
+		save_records(F_TEACHERS, teachers_);
+		save_records(F_ADMINS, admins_);
+		save_records(F_COURSES, courses_);
+		save_records(F_ATTEND, attendance_);
+		save_records(F_ASSESSMENTS, assessments_);
+		save_records(F_ENROLLMENTS, enrollments_);
+	};
+
+	void *run() {
+		while (true) {
+			switch (privilege_) {
+			case GUEST:
+				if (!guest_menu()) {
+					return NULL;
+				}
+				break;
+			case STUDENT:
+				student_menu();
+				break;
+			case TEACHER:
+				teacher_menu();
+				break;
+			case ADMIN:
+				admin_menu();
+				break;
+			}
+		}
+	}
 };

@@ -29,6 +29,16 @@ AttendanceRecord::AttendanceRecord(AttendanceRecord &&other) noexcept
       date(std::move(other.date)),
       isPresent(other.isPresent) {}
 
+AttendanceRecord &AttendanceRecord::operator=(const AttendanceRecord &other) {
+
+	studentID  = other.studentID;
+	courseCode = other.courseCode;
+	date       = other.date;
+	isPresent  = other.isPresent;
+
+	return *this;
+}
+
 // NOTE: ----- Serialise/Deserialise -----
 //  Format: studentID|courseCode|date|isPresent(0/1)
 
