@@ -1,5 +1,3 @@
-ncurses_dep = dependency('ncurses')
-
 # List all source files
 sources = files(
   'main.cpp',
