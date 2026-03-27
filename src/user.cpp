@@ -36,10 +36,11 @@ bool User::login(const std::string &uname, const std::string &pass) const {
 	if ((uname == username) && (passwordHash == hashPass(salt, pass))) {
 		std::cout << "\n  Login successful\n";
 		return true;
-	} else {
-		throw failure();
-	}
+	} 
+
 	return false;
+	//	throw failure();
+
 }
 
 void User::forgotPass() {

@@ -190,7 +190,7 @@ private:
 		//FIXME: This was not good coding
 		//Should not have used expcetions as its a expected failure
 
-		try {
+//		try {
 			for (auto &student : students_) {
 				if (student.login(uname, pass)) {
 					privilege_ = STUDENT;
@@ -198,9 +198,9 @@ private:
 					return true;
 				}
 			}
-		} catch (const failure &fail) {}
+//		} catch (const failure &fail) {}
 		
-		try {
+//		try {
 			for (auto &teacher : teachers_) {
 				if (teacher.login(uname, pass)) {
 					privilege_ = TEACHER;
@@ -208,9 +208,9 @@ private:
 					return true;
 				}
 			}
-		} catch (const failure &fail) {}
+//		} catch (const failure &fail) {}
 		
-		try {
+//		try {
 			for (auto &admin : admins_) {
 				if (admin.login(uname, pass)) {
 					privilege_ = ADMIN;
@@ -218,9 +218,9 @@ private:
 					return true;
 				}
 			}
-		} catch (const failure &fail) {
+//		} catch (const failure &fail) {
 			std::cerr << "\n  Invalid Username or password\n";
-		}
+//		}
 
 		return false;
 	}
@@ -497,6 +497,7 @@ private:
 			auto *obj = find_data<Assessment>(current_user.getID(), code);
 			if (obj == nullptr) {
 				std::cout << std::left << std::setw(12) << code << "(no marks entered yet)\n";
+				return;
 			};
 
 			Assessment &user_assessment = *obj;
