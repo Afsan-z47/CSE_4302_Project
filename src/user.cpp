@@ -33,15 +33,11 @@ User::User(
 void User::setPassword(const std::string &pass) { passwordHash = hashPass(salt, pass); }
 
 bool User::login(const std::string &uname, const std::string &pass) const {
-	try {
-		if ((uname == username) && (passwordHash == hashPass(salt, pass))) {
-			std::cout << "Login is successful" << std::endl;
-			return true;
-		} else {
-			throw failure();
-		}
-	} catch (const failure &f) {
-		std::cerr << "Username or password is incorrect" << std::endl;
+	if ((uname == username) && (passwordHash == hashPass(salt, pass))) {
+		std::cout << "\n  Login successful\n";
+		return true;
+	} else {
+		throw failure();
 	}
 	return false;
 }

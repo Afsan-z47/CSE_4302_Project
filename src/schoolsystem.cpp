@@ -166,27 +166,39 @@ private:
 	bool login(const std::string &uname, const std::string &pass) {
 		// TODO: Use std::ranges::any_of() following cpp core guidelines
 
-		for (auto &student : students_) {
-			if (student.login(uname, pass)) {
-				privilege_ = STUDENT;
-				sessionID_ = student.getID();
-				return true;
-			}
-		}
-		for (auto &teacher : teachers_) {
-			if (teacher.login(uname, pass)) {
-				privilege_ = TEACHER;
-				sessionID_ = teacher.getID();
-				return true;
-			}
-		}
+		//FIXME: This was not good coding
+		//Should not have used expcetions as its a expected failure
 
-		for (auto &admin : admins_) {
-			if (admin.login(uname, pass)) {
-				privilege_ = ADMIN;
-				sessionID_ = admin.getID();
-				return true;
+		try {
+			for (auto &student : students_) {
+				if (student.login(uname, pass)) {
+					privilege_ = STUDENT;
+					sessionID_ = student.getID();
+					return true;
+				}
 			}
+		} catch (const failure &fail) {}
+		
+		try {
+			for (auto &teacher : teachers_) {
+				if (teacher.login(uname, pass)) {
+					privilege_ = TEACHER;
+					sessionID_ = teacher.getID();
+					return true;
+				}
+			}
+		} catch (const failure &fail) {}
+		
+		try {
+			for (auto &admin : admins_) {
+				if (admin.login(uname, pass)) {
+					privilege_ = ADMIN;
+					sessionID_ = admin.getID();
+					return true;
+				}
+			}
+		} catch (const failure &fail) {
+			std::cerr << "\n  Invalid Username or password\n";
 		}
 
 		return false;
@@ -203,10 +215,10 @@ private:
 
 		int choice = 0;
 		while (true) {
-			std::cin >> choice;
-			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-			if (choice >= low || choice <= high)
+			choice = read_int("");
+			if (choice >= low || choice <= high) {
 				break;
+			}
 			std::cout << " Must be between " << low << " and " << high << " . Try again\n";
 		}
 		return choice;
@@ -249,12 +261,19 @@ private:
 	}
 
 	static double read_double(const std::string &prompt) {
-		double v = 0.0;
+		double value = 0;
 		std::cout << "  " << prompt;
-		std::cin >> v;
-		// using getline after this causes problem
-		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-		return v;
+		while (true) {
+			std::cin >> value;
+			if (std::cin.fail()) {
+				std::cin.clear();
+				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+				std::cout << "Invalid input. Try again: ";
+			} else {
+				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+				return value;
+			}
+		}
 	}
 
 	// NOTE: Helper Functions
@@ -357,6 +376,7 @@ private:
 		print_title("SCHOOL MANAGEMENT SYSTEM");
 		std::cout << "  [1]  Login\n";
 		std::cout << "  [0]  Exit\n\n";
+
 		if (read_choice(0, 1) == 0) {
 			return false;
 		}
@@ -364,12 +384,8 @@ private:
 		print_title("Login");
 		std::string uname = read_line("Username : ");
 		std::string pass  = read_line("Password : ");
-		;
-		if (login(uname, pass)) {
-			std::cout << "\n  Login successful.\n";
-		} else {
-			std::cout << "\n  Invalid username or password.\n";
-		}
+		
+		login(uname, pass);
 
 		return true;
 	}
@@ -820,7 +836,7 @@ private:
 				print_title("Add Teacher");
 				break;
 			default:
-			std::cout << "  Teacher not added!\n";
+				std::cout << "  Teacher not added!\n";
 				return;
 			}
 		}
@@ -833,10 +849,10 @@ private:
 		std::cout << "\n  Added.  ID=" << id << "  Password=" << pass << '\n';
 	}
 
-	void add_course(const std::string& instr, const std::string& code) {
+	void add_course(const std::string &instr, const std::string &code) {
 
 		print_title("Add Course");
-		std::string name  = read_line("Name       : ");
+		std::string name = read_line("Name       : ");
 
 		courses_.emplace_back(code, name, instr);
 		std::cout << "\n  Course added.\n";
