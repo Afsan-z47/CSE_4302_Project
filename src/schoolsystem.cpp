@@ -9,7 +9,9 @@
 #include <concepts>
 #include <cstdint>
 #include <fstream>
+#include <iostream>
 #include <limits>
+#include <ostream>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -230,13 +232,20 @@ private:
 		return s;
 	}
 
-	static double read_int(const std::string &prompt) {
-		int v = 0;
+	static int read_int(const std::string &prompt) {
+		int value = 0;
 		std::cout << "  " << prompt;
-		std::cin >> v;
-		// using getline after this causes problem
-		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-		return v;
+		while (true) {
+			std::cin >> value;
+			if (std::cin.fail()) {
+				std::cin.clear();
+				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+				std::cout << "Invalid input. Try again: ";
+			} else {
+				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+				return value;
+			}
+		}
 	}
 
 	static double read_double(const std::string &prompt) {
@@ -798,12 +807,39 @@ private:
 		std::string pn   = read_line("Phone       : ");
 		std::string mail = read_line("Email       : ");
 		std::string crs  = read_line("Course code : ");
+
+		if (find_data<Course>(crs) == nullptr) {
+			std::cout << "Course code not found\n";
+			std::cout << "  Would you like to add the course?\n";
+			std::cout << "  [1]  Yes\n";
+			std::cout << "  [0]  No\n";
+
+			switch (read_choice(0, 1)) {
+			case 1:
+				add_course(nm, crs);
+				print_title("Add Teacher");
+				break;
+			default:
+			std::cout << "  Teacher not added!\n";
+				return;
+			}
+		}
+
 		int         sal  = read_int("Salary      : ");
 		std::string id   = admin.generateTID();
 		std::string pass = admin.generatePass(pn);
 
 		teachers_.emplace_back(id, nm, age, pn, pass, sal, mail, crs);
 		std::cout << "\n  Added.  ID=" << id << "  Password=" << pass << '\n';
+	}
+
+	void add_course(const std::string& instr, const std::string& code) {
+
+		print_title("Add Course");
+		std::string name  = read_line("Name       : ");
+
+		courses_.emplace_back(code, name, instr);
+		std::cout << "\n  Course added.\n";
 	}
 
 	void add_course() {
