@@ -798,6 +798,12 @@ private:
 		std::string pn   = read_line("Phone       : ");
 		std::string mail = read_line("Email       : ");
 		std::string crs  = read_line("Course code : ");
+
+		if (find_data<Course>(crs) == nullptr) {
+			std::cout << "Course code not found\n";
+			return;
+		}
+
 		int         sal  = read_int("Salary      : ");
 		std::string id   = admin.generateTID();
 		std::string pass = admin.generatePass(pn);
