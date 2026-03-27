@@ -1,7 +1,6 @@
 #include "assessment.h"
 #include "AttendanceRecord.h"
 #include "course.cpp"
-#include "file_ops.h"
 #include "grade.h"
 #include "user.h"
 #include <algorithm>
@@ -83,6 +82,7 @@ private:
 	std::vector<Assessment>       assessments_;
 
 	// NOTE: File paths
+	static constexpr const char *F_CONFIG = "config.txt";
 	static constexpr const char *F_STUDENTS = "students.txt";
 	static constexpr const char *F_TEACHERS = "teachers.txt";
 	static constexpr const char *F_ADMINS   = "admins.txt";
@@ -99,15 +99,15 @@ private:
 	// NOTE: FILE LOADS/SAVES
 	template <typename T> void load_records(const char *path, std::vector<T> &data_vector) {
 
-		std::ifstream file_path(path);
-		if (!file_path) {
+		std::ifstream file(path);
+		if (!file) {
 			return;
 		}
 		data_vector.clear(); // needed for clean, new loads
 
-		while (file_path.peek() != EOF) {
+		while (file.peek() != EOF) {
 			T obj;
-			data_vector.push_back(obj.load(file_path));
+			data_vector.push_back(obj.load(file));
 		}
 	}
 
@@ -115,8 +115,8 @@ private:
 	void
 	load_records(const char *path, std::vector<std::pair<std::string, std::string>> &data_vector) {
 
-		std::ifstream file_path(path);
-		if (!file_path) {
+		std::ifstream file(path);
+		if (!file) {
 			return;
 		}
 
@@ -125,9 +125,9 @@ private:
 
 		data_vector.clear();
 
-		while (file_path.peek() != EOF) {
+		while (file.peek() != EOF) {
 
-			std::getline(file_path, line);
+			std::getline(file, line);
 			std::stringstream ss(line);
 
 			std::getline(ss, code, '|');
@@ -139,10 +139,10 @@ private:
 	}
 
 	template <typename T> void save_records(const char *path, const std::vector<T> &vec) {
-		std::ofstream file_path(path);
+		std::ofstream file(path);
 		for (const auto &item : vec) {
-			item.save(file_path);
-			file_path << '\n';
+			item.save(file);
+			file << '\n';
 		}
 	}
 
@@ -151,16 +151,37 @@ private:
 	void
 	save_records(const char *path, const std::vector<std::pair<std::string, std::string>> &vec) {
 
-		std::ofstream file_path(path);
+		std::ofstream file(path);
 
 		for (const auto &item : vec) {
 
 			std::ostringstream oss;
 			oss << item.first << '|' << item.second;
-			file_path << oss.str();
+			file << oss.str();
 
-			file_path << '\n';
+			file << '\n';
 		}
+	}
+	
+	void load_config(const char *path) {
+		std::ifstream file(path);
+		if (!file) {
+			return;
+		}
+
+		std::string line;
+
+		std::getline(file, line);
+		Student::student_count = std::stoi(line);
+		std::getline(file, line);
+		Teacher::teacher_count = std::stoi(line);
+
+	}
+
+	void save_config(const char* path) {
+		std::ofstream file(path);
+		file << Student::student_count << "\n";
+		file << Teacher::teacher_count << "\n";
 	}
 
 	bool login(const std::string &uname, const std::string &pass) {
@@ -1039,7 +1060,8 @@ public:
 	SchoolSystem()
 	    : privilege_(GUEST)
 
-	{
+	{	
+		load_config(F_CONFIG);
 		load_records(F_STUDENTS, students_);
 		load_records(F_TEACHERS, teachers_);
 		load_records(F_ADMINS, admins_);
@@ -1052,6 +1074,7 @@ public:
 	}
 
 	~SchoolSystem() {
+		save_config(F_CONFIG);
 		save_records(F_STUDENTS, students_);
 		save_records(F_TEACHERS, teachers_);
 		save_records(F_ADMINS, admins_);

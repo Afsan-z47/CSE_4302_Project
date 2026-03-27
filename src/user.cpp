@@ -1,7 +1,7 @@
 #include "user.h"
 
-int students = 0;
-int teachers = 0;
+int Student::student_count = 0;
+int Teacher::teacher_count = 0;
 
 // ─── User ────────────────────────────────────────────────────────────────────
 
@@ -79,13 +79,10 @@ Student::Student(
       motherName(mn),
       address(addr),
       phoneNumber(pn) {
-	std::cout << "Welcome to our school, " << n << "!" << std::endl;
+	std::cout << "\n  Welcome to our school, " << n << "!" << std::endl;
 }
 
-Student::~Student() {
-	std::cout << "Thank you for studying in our school. Hope you shine bright in your future."
-	          << std::endl;
-}
+Student::~Student() = default;
 
 std::string Student::getName() const { return username; }
 std::string Student::getFatherName() const { return fatherName; }
@@ -190,16 +187,16 @@ std::string Admin::generatePass(const std::string &phn) {
 }
 
 std::string Admin::generateSID() {
-	students++;
+	Student::student_count++;
 	std::stringstream ss;
-	ss << "123000" << std::setw(4) << std::setfill('0') << students;
+	ss << "123000" << std::setw(4) << std::setfill('0') << Student::student_count;
 	return ss.str();
 }
 
 std::string Admin::generateTID() {
-	teachers++;
+	Teacher::teacher_count++;
 	std::stringstream ss;
-	ss << "2600" << std::setw(6) << std::setfill('0') << teachers;
+	ss << "2600" << std::setw(6) << std::setfill('0') << Teacher::teacher_count;
 	return ss.str();
 }
 

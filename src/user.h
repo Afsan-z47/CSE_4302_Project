@@ -52,12 +52,15 @@ public:
 };
 
 class Student : public User, public File_ops<Student> {
+private:
 	std::string fatherName;
 	std::string motherName;
 	std::string address;
 	std::string phoneNumber;
 
 public:
+	static int student_count;
+
 	Student();
 	Student(
 	    const std::string &n,
@@ -100,12 +103,15 @@ public:
 };
 
 class Teacher : public User, public File_ops<Teacher> {
+private:
 	int         age;
 	std::string phone_number;
 	std::string course;
 	int         salary;
 
 public:
+	static int teacher_count ;
+
 	Teacher();
 	Teacher(
 	    const std::string &id,
@@ -119,9 +125,10 @@ public:
 	);
 
 	void displayInfo() const;
-	void setCourse(const std::string &c);
 	void updateSalary(int newSalary);
 	void contact() const;
+	
+	void setCourse(const std::string &c);
 
 	void getType() const override;
 
