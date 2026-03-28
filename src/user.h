@@ -14,10 +14,6 @@
 extern int students;
 extern int teachers;
 
-class failure {
-	// empty class to handle login error
-};
-
 class User {
 protected:
 	std::string ID;
@@ -110,7 +106,7 @@ private:
 	int         salary;
 
 public:
-	static int teacher_count ;
+	static int teacher_count;
 
 	Teacher();
 	Teacher(
@@ -127,7 +123,7 @@ public:
 	void displayInfo() const;
 	void updateSalary(int newSalary);
 	void contact() const;
-	
+
 	void setCourse(const std::string &c);
 
 	void getType() const override;

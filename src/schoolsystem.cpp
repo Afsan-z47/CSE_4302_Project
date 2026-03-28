@@ -7,6 +7,7 @@
 #include <cassert>
 #include <concepts>
 #include <cstdint>
+#include <exception>
 #include <fstream>
 #include <iostream>
 #include <limits>
@@ -49,6 +50,22 @@
 //                                    └───────────────────┘    Assessment)
 //
 
+class DataBaseError : public std::exception {
+public:
+	// empty class to handle login error
+	const char *what() const noexcept override { return "Impossible state"; }
+};
+
+class NotFound : public std::exception {
+	std::string msg_;
+
+public:
+	explicit NotFound(std::string err)
+	    : msg_(std::move(err) + " data not found") {}
+
+	const char *what() const noexcept override { return msg_.c_str(); }
+};
+
 enum Privilege_type : uint8_t {
 	GUEST   = 0,
 	STUDENT = 1,
@@ -82,7 +99,7 @@ private:
 	std::vector<Assessment>       assessments_;
 
 	// NOTE: File paths
-	static constexpr const char *F_CONFIG = "config.txt";
+	static constexpr const char *F_CONFIG   = "config.txt";
 	static constexpr const char *F_STUDENTS = "students.txt";
 	static constexpr const char *F_TEACHERS = "teachers.txt";
 	static constexpr const char *F_ADMINS   = "admins.txt";
@@ -162,7 +179,7 @@ private:
 			file << '\n';
 		}
 	}
-	
+
 	void load_config(const char *path) {
 		std::ifstream file(path);
 		if (!file) {
@@ -175,10 +192,9 @@ private:
 		Student::student_count = std::stoi(line);
 		std::getline(file, line);
 		Teacher::teacher_count = std::stoi(line);
-
 	}
 
-	void save_config(const char* path) {
+	void save_config(const char *path) {
 		std::ofstream file(path);
 		file << Student::student_count << "\n";
 		file << Teacher::teacher_count << "\n";
@@ -187,40 +203,40 @@ private:
 	bool login(const std::string &uname, const std::string &pass) {
 		// TODO: Use std::ranges::any_of() following cpp core guidelines
 
-		//FIXME: This was not good coding
-		//Should not have used expcetions as its a expected failure
+		// FIXME: This was not good coding
+		// Should not have used expcetions as its a expected failure
 
-//		try {
-			for (auto &student : students_) {
-				if (student.login(uname, pass)) {
-					privilege_ = STUDENT;
-					sessionID_ = student.getID();
-					return true;
-				}
+		//		try {
+		for (auto &student : students_) {
+			if (student.login(uname, pass)) {
+				privilege_ = STUDENT;
+				sessionID_ = student.getID();
+				return true;
 			}
-//		} catch (const failure &fail) {}
-		
-//		try {
-			for (auto &teacher : teachers_) {
-				if (teacher.login(uname, pass)) {
-					privilege_ = TEACHER;
-					sessionID_ = teacher.getID();
-					return true;
-				}
+		}
+		//		} catch (const failure &fail) {}
+
+		//		try {
+		for (auto &teacher : teachers_) {
+			if (teacher.login(uname, pass)) {
+				privilege_ = TEACHER;
+				sessionID_ = teacher.getID();
+				return true;
 			}
-//		} catch (const failure &fail) {}
-		
-//		try {
-			for (auto &admin : admins_) {
-				if (admin.login(uname, pass)) {
-					privilege_ = ADMIN;
-					sessionID_ = admin.getID();
-					return true;
-				}
+		}
+		//		} catch (const failure &fail) {}
+
+		//		try {
+		for (auto &admin : admins_) {
+			if (admin.login(uname, pass)) {
+				privilege_ = ADMIN;
+				sessionID_ = admin.getID();
+				return true;
 			}
-//		} catch (const failure &fail) {
-			std::cerr << "\n  Invalid Username or password\n";
-//		}
+		}
+		//		} catch (const failure &fail) {
+		std::cerr << "\n  Invalid Username or password\n";
+		//		}
 
 		return false;
 	}
@@ -405,7 +421,7 @@ private:
 		print_title("Login");
 		std::string uname = read_line("Username : ");
 		std::string pass  = read_line("Password : ");
-		
+
 		login(uname, pass);
 
 		return true;
@@ -835,8 +851,7 @@ private:
 		print_title("Add Teacher");
 		auto *obj = find_data<Admin>(sessionID_);
 		if (obj == nullptr) {
-			std::cout << "  Session error.\n";
-			return;
+			throw DataBaseError();
 		}
 		Admin &admin = *obj;
 
@@ -904,13 +919,11 @@ private:
 		std::string id   = read_line("Student ID  : ");
 
 		if (find_data<Course>(code) == nullptr) {
-			std::cout << "  Course not found.\n";
-			return;
+			throw(NotFound("Course"));
 		}
 
 		if (find_data<Student>(id) == nullptr) {
-			std::cout << "  Student not found.\n";
-			return;
+			throw(NotFound("Student"));
 		}
 
 		if (is_enrolled(code, id)) {
@@ -1025,35 +1038,44 @@ private:
 		std::cout << "  [8]  Course attendance report\n";
 		std::cout << "  [0]  Logout\n\n";
 
-		switch (read_choice(0, 8)) {
-		case 0:
-			logout();
-			break;
+		try {
 
-		case 1:
-			add_student();
-			break;
-		case 2:
-			add_teacher();
-			break;
-		case 3:
-			add_course();
-			break;
-		case 4:
-			enroll_student();
-			break;
-		case 5:
-			list_students();
-			break;
-		case 6:
-			list_teachers();
-			break;
-		case 7:
-			list_courses();
-			break;
-		case 8:
-			view_course_attendence();
-			break;
+			switch (read_choice(0, 8)) {
+			case 0:
+				logout();
+				break;
+
+			case 1:
+				add_student();
+				break;
+			case 2:
+				add_teacher();
+				break;
+			case 3:
+				add_course();
+				break;
+			case 4:
+				enroll_student();
+				break;
+			case 5:
+				list_students();
+				break;
+			case 6:
+				list_teachers();
+				break;
+			case 7:
+				list_courses();
+				break;
+			case 8:
+				view_course_attendence();
+				break;
+			}
+
+		} catch (NotFound &error) {
+
+			std::cout << error.what() << "\n";
+		} catch (DataBaseError &error) {
+			std::cout << error.what() << "\n";
 		}
 	}
 
@@ -1061,7 +1083,7 @@ public:
 	SchoolSystem()
 	    : privilege_(GUEST)
 
-	{	
+	{
 		load_config(F_CONFIG);
 		load_records(F_STUDENTS, students_);
 		load_records(F_TEACHERS, teachers_);
@@ -1075,14 +1097,14 @@ public:
 	}
 
 	~SchoolSystem() {
-		save_config(F_CONFIG);
-		save_records(F_STUDENTS, students_);
-		save_records(F_TEACHERS, teachers_);
-		save_records(F_ADMINS, admins_);
-		save_records(F_COURSES, courses_);
-		save_records(F_ATTEND, attendance_);
-		save_records(F_ASSESSMENTS, assessments_);
-		save_records(F_ENROLLMENTS, enrollments_);
+			save_config(F_CONFIG);
+			save_records(F_STUDENTS, students_);
+			save_records(F_TEACHERS, teachers_);
+			save_records(F_ADMINS, admins_);
+			save_records(F_COURSES, courses_);
+			save_records(F_ATTEND, attendance_);
+			save_records(F_ASSESSMENTS, assessments_);
+			save_records(F_ENROLLMENTS, enrollments_);
 	};
 
 	void *run() {
