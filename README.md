@@ -29,9 +29,6 @@
 - Najmus Sakib
 	- [x] SchoolSystem
 
-# School Management System
-----------------------------
-
 
 ### Common things to remember
  - Use src folder for storing source .cpp files
@@ -167,8 +164,8 @@ executable('project.o', sources)
 
 ### TODO
 
-- [ ] Better README
-- [ ] Initial Codes
+- [x] Better README
+- [x] Initial Codes
 - [x] Configure make file -> Used meson as a build system
 - [ ] Configure .gitignore
 - [x] Integrate Clang-tidy
