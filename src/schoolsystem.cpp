@@ -756,21 +756,21 @@ private:
 			double fin = read_double("  Final   (0-120) : ");
 
 			auto      *obj = find_data<Assessment>(id, code);
-			Assessment assessment;
+			Assessment *assessment;
 			if (obj == nullptr) {
 				Assessment temp;
 				temp.set_id(id);
 				temp.set_courceCode(code);
 				assessments_.push_back(temp);
-				assessment = assessments_.back();
+				assessment = &assessments_.back();
 			}
 
 			double m[6] = {q1, q2, q3, q4, mid, fin};
-			assessment.set_all_marks_together(m);
+			assessment->set_all_marks_together(m);
 
-			Grade grade(*student, assessment);
+			Grade grade(*student, *assessment);
 			std::cout << "  → " << grade.get_grade() << "  (" << std::fixed << std::setprecision(1)
-			          << assessment.get_percentage() << "%)\n";
+			          << assessment->get_percentage() << "%)\n";
 		}
 
 		if (any_entered) {
