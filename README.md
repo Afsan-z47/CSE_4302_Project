@@ -1,4 +1,4 @@
-# CSE_4302_Project
+# School Management System
 --------------------
 
 | Name                    | ID        |
@@ -27,7 +27,7 @@
     - [x] AttendanceRecord
 
 - Najmus Sakib
-	- [ ] SchoolSystem
+	- [x] SchoolSystem
 
 # School Management System
 ----------------------------
